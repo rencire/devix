@@ -1,5 +1,3 @@
-Configure your flake developer shell with developer modules.
-
 # About
 Devmods is a project created to easily setup and configure your develoepr environment.
 This is done through configuring modules in a nix flake file.
