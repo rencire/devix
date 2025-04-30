@@ -7,6 +7,7 @@ in
     # TODO consider using some flakelight utils (e.g. autoload folders)
     ./modules/android/default.nix
     ./modules/flutter/default.nix
+    ./modules/languages/java.nix
   ];
 
   options.devmods.common.allowUnfree = lib.mkOption {
