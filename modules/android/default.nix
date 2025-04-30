@@ -194,9 +194,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    devmods.common.allowUnfree = [ true ];
+    devmods.languages.java.enable = true; # Just use defautl java language package.
     nixpkgs.config = {
       android_sdk.accept_license = true;
-      allowUnfree = true;
     };
     devShell =
       pkgs:
@@ -212,7 +213,6 @@ in
         packages = with pkgs; [
           androidSdk # reference our own sdk settings
           gradle
-          jdk23
         ];
 
         # Environment variables
@@ -221,7 +221,6 @@ in
           ANDROID_SDK_ROOT = ANDROID_HOME;
           ANDROID_NDK_ROOT = ANDROID_NDK_ROOT;
 
-          JAVA_HOME = "${jdk23.home}";
           GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/${lib.head cfg.buildTools.version}/aapt2";
           # emulator related: vulkan-loader and libGL shared libs are necessary for hardware decoding
           LD_LIBRARY_PATH = "${
