@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
@@ -18,22 +17,42 @@ in
     };
 
     # Option to select the Java package (JDK version)
-    package = lib.mkOption {
-      type = lib.types.package;
-      default = pkgs.jdk23;
-      description = "The Java package (JDK version) to use. You can specify any package like pkgs.jdk17 or pkgs.jdk23.";
+    version = lib.mkOption {
+      type = lib.types.str;
+      default = "23";
+      description = ''
+        The Java package (JDK version) to use. You can specify versions that exist in nixpkgs.
+        e.g. 17, 23
+      '';
     };
+
+    # package = lib.mkOption {
+    #   type = lib.types.package;
+    #   default = null;
+    #   description = ''
+    #     The Java package to use. You can specify versions that exist in nixpkgs.
+    #     e.g. jdk17, jdk23
+    #   '';
+    # };
   };
 
   config = lib.mkIf cfg.enable {
-    devShell = {
-      packages = [
-        config.devmods.languages.java.package
-      ];
-
-      env = {
-        JAVA_HOME = "${config.devmods.languages.java.package.home}";
+    # packages = {
+    # jdk = pkgs: pkgs."jdk${cfg.version}";
+    # };
+    devShell =
+      pkgs:
+      let
+        jdkPackage = pkgs."jdk${cfg.version}";
+        # jdkPackage = cfg.package;
+      in
+      {
+        packages = [
+          jdkPackage
+        ];
+        env = {
+          JAVA_HOME = "${jdkPackage.home}";
+        };
       };
-    };
   };
 }

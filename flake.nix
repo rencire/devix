@@ -1,10 +1,12 @@
 {
   description = "Flakelight module for setting up developer modules";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.flakelight.url = "github:nix-community/flakelight";
 
   outputs =
-    { flakelight, ... }:
+    { flakelight, ... }@inputs:
     flakelight ./. {
+      inherit inputs;
       imports = [ flakelight.flakelightModules.flakelightModule ];
       flakelightModule = ./devmods.nix;
     };

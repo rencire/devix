@@ -1,13 +1,18 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  # pkgs,
+  ...
+}:
 let
   cfg = config.devmods.common;
 in
 {
   imports = [
     # TODO consider using some flakelight utils (e.g. autoload folders)
+    ./modules/languages/java.nix
     ./modules/android/default.nix
     ./modules/flutter/default.nix
-    ./modules/languages/java.nix
   ];
 
   options.devmods.common.allowUnfree = lib.mkOption {

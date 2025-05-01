@@ -66,7 +66,9 @@ in
 
     buildTools.version = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = [ "36.0.0" ];
+      default = [
+        "36.0.0"
+      ];
       description = ''
         The version of the Android build tools to install.
       '';
@@ -232,6 +234,7 @@ in
            :${ANDROID_NDK_ROOT}/${lib.head cfg.ndk.versions}/toolchains/llvm/prebuilt/${os}-x86_64/lib/
           :$LD_LIBRARY_PATH";
           # For now, it seems only x86_64 is available for prebuilt llvm libraries
+          # TODO: fix bug where ndk.versions is an empty list
         };
 
         shellHook = ''
