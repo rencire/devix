@@ -1,4 +1,4 @@
-{ jdkVersion }:
+{ androidSdkVersion, jdkVersion }:
 {
   devShell =
     pkgs:
@@ -31,17 +31,25 @@
       };
 
       shellHook = ''
-        # Need to unset below variables so that they aren't bound to outdated SDKs.
-        # Found I needed to do this in order to properly read the system xcode app.
-        unset DEVELOPER_DIR
-        unset SDKROOT
+         # Need to unset below variables so that they aren't bound to outdated SDKs.
+         # Found I needed to do this in order to properly read the system xcode app.
+         unset DEVELOPER_DIR
+         unset SDKROOT
 
-        # Create a symlink to the settings file in the home directory
-        # 
-        # Need this beccause flutter will priporitize using the same java version as Android Studio if it exists.
-        # Only way to not look at Android Studio is to explicity set jdk-dir. 
-        # mkdir -p $HOME/.config/flutter
-        ln -sf ${flutterSettingsFile} $HOME/.config/flutter/settings
+         # Create a symlink to the settings file in the home directory
+         # 
+         # Need this beccause flutter will priporitize using the same java version as Android Studio if it exists.
+         # Only way to not look at Android Studio is to explicity set jdk-dir. 
+         # mkdir -p $HOME/.config/flutter
+         ln -sf ${flutterSettingsFile} $HOME/.config/flutter/settings
+
+         # Initialize a flutter project, with patched files
+        if [ ! -f "pubspec.yaml" ]; then
+           echo "No Flutter project detected. Initializng flutter project..."
+           ${./flutter-create-and-patch-files.sh} "." "${androidSdkVersion}"
+         else
+           echo "Flutter project already exists. Skipping patching initialized files from `flutter create`."
+         fi
       '';
     };
 }
