@@ -1,4 +1,7 @@
 # TODO
+- [] Change `compileSdkVersion` option to `android.compileSdkVersion` for clarity.
+- [] Fix build errors with NDK
+- [] Double check ndk.versions bug is still present
 
 
 # Notes
