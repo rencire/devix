@@ -1,11 +1,4 @@
 # TODO
-- [] Attempt to patch the flutter_tools/templates/app/build.gradle.kts, instead of replacing the
-  - via shell script
-  - Try this for flutter 3.27
-- [] Side exp: see if we can override template groovy files with kotlin.
-  - Tried adding filess, but kotlin files not loading, even with `flutter create --android-language kotlin`
-- [] Another approach: use flutter 3.29, but downgrade gradle to 8.8.  Then apply patch to android/build.gradke.kts
-
 
 
 # Notes
@@ -25,6 +18,25 @@
       - Could not get this to work however for me; suspect there might be a mix of issues users
         are reporting on that GB issue
 
+## Approaches try:
+- [] Attempt to patch the flutter_tools/templates/app/build.gradle.kts, instead of replacing the
+  - via shell script
+  - Try this for flutter 3.27
+- [x] Side exp: see if we can override template groovy files with kotlin.
+  - Tried adding filess, but kotlin files not loading, even with `flutter create --android-language kotlin`
+- [] Another approach: use flutter 3.29, but downgrade gradle to 8.8.  Then apply patch to android/build.gradke.kts
+  - got tip from: https://github.com/NixOS/nixpkgs/issues/395096#issuecomment-2840719852
+  - Not sure how to manage gradle version from nix (8.8), since it looks like flutter/android by default its using `gradlew` and manages
+    its own gradle executable.
+  - Downgraded version in gradle properties file, but couldn't use 8.8 sinee flutter complained android-flugger-gradle plugin ned 8.9.
+    when upgraded to 8.9
+  - Decided to skip all these approaches, and go wit hsimple approach below.
+
+
+## Summary
+- At the end, decided to just have a simple script to overwrite compileSdk, instead of dealing
+  with flutter/gradle code (got tired from failed approaches above)
+   
 
 # Resources
 - https://ertt.ca/nix/shell-scripts/
