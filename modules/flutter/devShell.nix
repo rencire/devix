@@ -12,6 +12,43 @@
           }
         '';
       };
+      patchedFlutter = pkgs.flutter327;
+
+      # patchedFlutter = pkgs.flutter.override (prev: rec {
+      #   flutter = prev.flutter.overrideAttrs (prevAttrs: {
+      #     patches = prevAttrs.patches ++ [
+      #       # ./0001-add-settings-kts-tmpl.patch
+      #       # ./0001-add-build-kits-tmpl.patch
+      #     ];
+      #     passthru = prevAttrs.passthru // {
+      #       sdk = flutter;
+      #     };
+      #   });
+      # });
+      # patchedFlutter = pkgs.flutter.override (prev: rec {
+      #   flutter = prev.flutter.overrideAttrs (prevAttrs: {
+      #     patches = prevAttrs.patches ++ [
+      #       # This patch is needed to avoid the Kotlin Gradle plugin writing to the store.
+      #       (pkgs.writeText "kotlin-fix.patch" ''
+      #         --- a/packages/flutter_tools/gradle/build.gradle.kts
+      #         +++ b/packages/flutter_tools/gradle/build.gradle.kts
+      #         @@ -4,6 +4,8 @@
+
+      #          import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+      #         +gradle.startParameter.projectCacheDir = layout.buildDirectory.dir("cache").get().asFile
+      #         +
+      #          plugins {
+      #              `java-gradle-plugin`
+      #              groovy
+      #       '')
+      #     ];
+      #     passthru = prevAttrs.passthru // {
+      #       sdk = flutter;
+      #     };
+      #   });
+      # });
+
     in
     {
       packages = with pkgs; [

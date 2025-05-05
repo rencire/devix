@@ -28,6 +28,17 @@ in
   options.devmods.android = {
     enable = lib.mkEnableOption "tools for Android Development";
 
+    gradle.version = lib.mkOption {
+      # Currently only support 8.8
+      # TODO add the other versions from nixpkgs.
+      # type = lib.types.str;
+      # default = "8.8";
+      # description = ''
+      # The version of gradle to se..
+      # By default, version 8.8 is installed.
+      # '';
+    };
+
     cmdLineTools.version = lib.mkOption {
       type = lib.types.str;
       default = "19.0";
@@ -199,11 +210,22 @@ in
         # NOTE: not sure why `avdmanager` is warningabout `ndk` and `nkd-bundle` both existing.
         ANDROID_NDK_ROOT = "${ANDROID_HOME}/ndk/";
         os = builtins.elemAt (builtins.split "-" pkgs.stdenv.system) 2;
+
+        gradle_8_8-generated = pkgs.gradleGen {
+          version = "8.8";
+          hash = "sha256-pLQVhgH4Y2ze6rCb12r7ZAAwu1sUSq/iYaXorwJ9xhI=";
+          # TODO might have to change this version?
+          defaultJava = pkgs.jdk21;
+        };
+        gradle_8_8-unwrapped = pkgs.callPackage gradle_8_8-generated { };
+        gradle_8_8 = pkgs.wrapGradle gradle_8_8-unwrapped null;
       in
       {
         packages = with pkgs; [
           androidSdk # reference our own sdk settings
-          gradle
+          # gradle
+          # hard code to 8.8 for now
+          gradle_8_8
         ];
 
         # Environment variables
@@ -212,6 +234,7 @@ in
           ANDROID_SDK_ROOT = ANDROID_HOME;
           ANDROID_NDK_ROOT = ANDROID_NDK_ROOT;
 
+          GRADLE_HOME = "${gradle_8_8}";
           GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/${lib.head cfg.buildTools.version}/aapt2";
           # emulator related: vulkan-loader and libGL shared libs are necessary for hardware decoding
           LD_LIBRARY_PATH = "${
