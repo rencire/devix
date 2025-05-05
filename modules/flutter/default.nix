@@ -22,6 +22,7 @@ in
       # Need to set buildtools version for android, for sdk 34.
       { devmods.android.buildTools.version = [ "33.0.1" ]; }
       # Set flutter settings to ouput flake
+      (import ./packages.nix)
       (import ./devShell.nix { inherit jdkVersion; })
     ]
   );

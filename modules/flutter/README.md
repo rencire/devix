@@ -1,3 +1,13 @@
+# TODO
+- [] Attempt to patch the flutter_tools/templates/app/build.gradle.kts, instead of replacing the
+  - via shell script
+  - Try this for flutter 3.27
+- [] Side exp: see if we can override template groovy files with kotlin.
+  - Tried adding filess, but kotlin files not loading, even with `flutter create --android-language kotlin`
+- [] Another approach: use flutter 3.29, but downgrade gradle to 8.8.  Then apply patch to android/build.gradke.kts
+
+
+
 # Notes
 - `compileSdkVersion` default value located in:
   - <flutter_sdk>/packages/flutter_tools/gradle/src/main/groovy/flutter.groovy
@@ -12,7 +22,8 @@
   - Approach 2: Patch the kotlin gradle plugin
     - Continue using latest flutter, but patch the flutter code / template files themselves.
     - See: https://github.com/NixOS/nixpkgs/issues/395096#issuecomment-2845767048
-  - Maybe combine both approaches: Approach 1 for sdk 34, and Approach 2 for latest sdk?
+      - Could not get this to work however for me; suspect there might be a mix of issues users
+        are reporting on that GB issue
 
 
 # Resources
