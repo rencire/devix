@@ -6,7 +6,6 @@
 let
   cfg = config.devmods.android;
   sdkArgs = {
-    toolsVersion = cfg.tools.version; # TODO remove this if not needed
     cmdLineToolsVersion = cfg.cmdLineTools.version;
     platformVersions = cfg.platform.versions;
     platformToolsVersion = cfg.platformTools.version;
@@ -28,16 +27,6 @@ in
 {
   options.devmods.android = {
     enable = lib.mkEnableOption "tools for Android Development";
-
-    # NOTE: this might be deprecated soon?
-    tools.version = lib.mkOption {
-      type = lib.types.str;
-      default = "26.1.1";
-      description = ''
-        The version of the Android SDK tools to install.
-        By default, version 26.1.1 is installed.
-      '';
-    };
 
     cmdLineTools.version = lib.mkOption {
       type = lib.types.str;
