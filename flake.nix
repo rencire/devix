@@ -9,5 +9,11 @@
       inherit inputs;
       imports = [ flakelight.flakelightModules.flakelightModule ];
       flakelightModule = ./devmods.nix;
+      # devShell = {
+      #   packages = pkgs: [ pkgs.ruff ];
+      # };
+      # formatters = {
+      #   "*.py" = "ruff";
+      # };
     };
 }

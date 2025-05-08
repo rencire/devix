@@ -25,6 +25,9 @@ let
   };
 in
 {
+  imports = [
+    ./packages.nix
+  ];
   options.devmods.android = {
     enable = lib.mkEnableOption "tools for Android Development";
 
@@ -223,7 +226,6 @@ in
     nixpkgs.config = {
       android_sdk.accept_license = true;
     };
-    packages = import ./packages.nix;
     devShell = import ./devshell.nix { inherit sdkArgs cfg; };
   };
 }

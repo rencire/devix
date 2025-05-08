@@ -12,7 +12,7 @@
         # 1) Create flutter initial project files
         flutter create .
         # 2) Update versions in files
-        ${pkgs.update-android-file-versions}/bin/update-android-file-versions "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}"
+        ${pkgs.sync-android-build-files}/bin/update-android-file-versions "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}"
 
          
         # 3) add local.properties to ./anddroid/ folder

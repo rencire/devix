@@ -84,6 +84,6 @@ in
     ln -sf ${flutterSettingsFile} $HOME/.config/flutter/settings
 
     # TODO create a compileSdkVersion for android module
-    ${pkgs.update-android-file-versions}/bin/update-android-file-versions "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}"
+    ${pkgs.sync-android-build-files}/bin/update-android-file-versions "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}"
   '';
 }
