@@ -1,6 +1,6 @@
-{
-  jdkVersion,
-  androidCfg,
+{ jdkVersion
+, androidCfg
+,
 }:
 pkgs:
 let
