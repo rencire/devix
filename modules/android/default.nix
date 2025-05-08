@@ -9,13 +9,13 @@ let
     cmdLineToolsVersion = cfg.cmdLineTools.version;
     platformVersions = cfg.platform.versions;
     platformToolsVersion = cfg.platformTools.version;
-    buildToolsVersions = cfg.buildTools.version;
+    buildToolsVersions = cfg.buildTools.versions;
     includeEmulator = cfg.emulator.enable;
     emulatorVersion = cfg.emulator.version;
     includeSystemImages = cfg.systemImages.enable;
     systemImageTypes = cfg.systemImageTypes;
     abiVersions = cfg.abis;
-    cmakeVersions = cfg.cmake.version;
+    cmakeVersions = cfg.cmake.versions;
     includeNDK = cfg.ndk.enable;
     ndkVersions = cfg.ndk.versions;
     useGoogleAPIs = cfg.googleAPIs.enable;
@@ -28,28 +28,50 @@ in
   options.devmods.android = {
     enable = lib.mkEnableOption "tools for Android Development";
 
-    gradle.version = lib.mkOption {
-      # Currently only support 8.8
-      # TODO add the other versions from nixpkgs.
-      # type = lib.types.str;
-      # default = "8.8";
-      # description = ''
-      # The version of gradle to se..
-      # By default, version 8.8 is installed.
-      # '';
+    # gradle.version = lib.mkOption {
+    # Currently only support 8.8
+    # TODO add the other versions from nixpkgs.
+    # type = lib.types.str;
+    # default = "8.8";
+    # description = ''
+    # The version of gradle to se..
+    # By default, version 8.8 is installed.
+    # '';
+    # };
+
+    androidGradlePlugin.version = lib.mkOption {
+      type = lib.types.str;
+      default = ""; # last working version for flutter 3.29, and gradle 8.8
+      description = ''
+        The version of android gradple plugin version to use. This is used
+        to update the version in `settings.gradle.kts` file.
+        By default, this is empty string, which means we will not update the
+        version in `settings.gradle.kts`. 
+      '';
+    };
+
+    compileSdk.version = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      description = ''
+        The version of android gradple plugin version to use. This is used
+        to update the version in `app/build.gradle.kts` file.
+        By default, this is empty string, which means we will not update the
+        version in `app/build.gradle.kts`. 
+      '';
     };
 
     cmdLineTools.version = lib.mkOption {
-      type = lib.types.str;
-      default = "19.0";
+      type = lib.types.either (lib.types.enum [ "latest" ]) lib.types.str;
+      default = "latest";
       description = ''
         The version of the Android command line tools to install.
       '';
     };
 
     platform.versions = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [ "34" ];
+      type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
+      default = [ "latest" ];
       description = ''
         The Android platform versions to install.
         By default, version 34 is installed.
@@ -57,17 +79,17 @@ in
     };
 
     platformTools.version = lib.mkOption {
-      type = lib.types.str;
-      default = "35.0.2";
+      type = lib.types.either (lib.types.enum [ "latest" ]) lib.types.str;
+      default = "latest";
       description = ''
         The version of the Android platform tools to install.
       '';
     };
 
-    buildTools.version = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+    buildTools.versions = lib.mkOption {
+      type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
       default = [
-        "36.0.0"
+        "latest"
       ];
       description = ''
         The version of the Android build tools to install.
@@ -84,7 +106,7 @@ in
     };
 
     emulator.version = lib.mkOption {
-      type = lib.types.str;
+      type = lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str);
       default = "35.6.2";
       description = ''
         The version of the Android Emulator to install.
@@ -122,8 +144,8 @@ in
       '';
     };
 
-    cmake.version = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+    cmake.versions = lib.mkOption {
+      type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
       # TODO figure out if newer version also works
       default = [ "3.31.6" ];
       description = ''
@@ -134,7 +156,7 @@ in
 
     ndk.enable = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false;
       description = ''
         Whether to include the Android NDK (Native Development Kit).
         By default, the NDK is included.
@@ -142,7 +164,7 @@ in
     };
 
     ndk.versions = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+      type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
       default = [ "26.1.10909125" ];
       description = ''
         The version of the Android NDK (Native Development Kit) to install.
@@ -201,80 +223,7 @@ in
     nixpkgs.config = {
       android_sdk.accept_license = true;
     };
-    devShell =
-      pkgs:
-      let
-        androidComposition = pkgs.androidenv.composeAndroidPackages sdkArgs;
-        androidSdk = androidComposition.androidsdk;
-        ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
-        # NOTE: not sure why `avdmanager` is warningabout `ndk` and `nkd-bundle` both existing.
-        ANDROID_NDK_ROOT = "${ANDROID_HOME}/ndk/";
-        os = builtins.elemAt (builtins.split "-" pkgs.stdenv.system) 2;
-
-        gradle_8_8-generated = pkgs.gradleGen {
-          version = "8.8";
-          hash = "sha256-pLQVhgH4Y2ze6rCb12r7ZAAwu1sUSq/iYaXorwJ9xhI=";
-          # TODO might have to change this version?
-          defaultJava = pkgs.jdk21;
-        };
-        gradle_8_8-unwrapped = pkgs.callPackage gradle_8_8-generated { };
-        gradle_8_8 = pkgs.wrapGradle gradle_8_8-unwrapped null;
-      in
-      {
-        packages = with pkgs; [
-          androidSdk # reference our own sdk settings
-          # gradle
-          # hard code to 8.8 for now
-          gradle_8_8
-        ];
-
-        # Environment variables
-        env = with pkgs; {
-          ANDROID_HOME = ANDROID_HOME;
-          ANDROID_SDK_ROOT = ANDROID_HOME;
-          ANDROID_NDK_ROOT = ANDROID_NDK_ROOT;
-
-          GRADLE_HOME = "${gradle_8_8}";
-          GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/${lib.head cfg.buildTools.version}/aapt2";
-          # emulator related: vulkan-loader and libGL shared libs are necessary for hardware decoding
-          LD_LIBRARY_PATH = "${
-            lib.makeLibraryPath [
-              vulkan-loader
-              libGL
-            ]
-          }:${ANDROID_HOME}/build-tools/${lib.head cfg.buildTools.version}/lib64/
-           :${ANDROID_NDK_ROOT}/${lib.head cfg.ndk.versions}/toolchains/llvm/prebuilt/${os}-x86_64/lib/
-          :$LD_LIBRARY_PATH";
-          # For now, it seems only x86_64 is available for prebuilt llvm libraries
-          # TODO: fix bug where ndk.versions is an empty list
-        };
-
-        shellHook = ''
-          set -e
-
-          # tools is deprecated? I think it's replaced by command-line-tools? Add it here anyway
-          export PATH="$PATH:$ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools"
-
-          # Create a local properites file for Android Studio to read.
-          # Haven't tested Android Studio with this, so not sure it works.
-
-          # TODO move this into android directory
-          # TODO add lgoic so we only do this if flutter is not enabled
-          # if [ "${toString config.devmods.flutter.enable}" = "false" ]; then
-          #   cat <<EOF > local.properties
-          #   # This file was automatically generated by nix-shell.
-          #   sdk.dir=$ANDROID_HOME
-          #   ndk.dir=$ANDROID_NDK_ROOT
-          #   EOF
-          # fi
-
-          export ANDROID_USER_HOME=$(pwd)/.android
-          export ANDROID_AVD_HOME=$(pwd)/.android/avd
-
-          test -e "$ANDROID_USER_HOME" || mkdir -p "$ANDROID_USER_HOME"
-          test -e "$ANDROID_AVD_HOME" || mkdir -p "$ANDROID_AVD_HOME"
-          set +e
-        '';
-      };
+    packages = import ./packages.nix;
+    devShell = import ./devshell.nix { inherit sdkArgs cfg; };
   };
 }

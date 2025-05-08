@@ -1,7 +1,7 @@
 # TODO
-- [] Change `compileSdkVersion` option to `android.compileSdkVersion` for clarity.
-- [] Fix build errors with NDK
-- [] Double check ndk.versions bug is still present
+- [] Add instructions for quickstart, now that we have basic flutter project working w/ android sdk 34
+- [] refactor "import ./<filename>.nix" to use the "imports = [ <filename> ]" pattern instead for idomatic nix.
+- [x] Change `compileSdkVersion` option to `android.compileSdkVersion` for clarity.
 
 
 # Notes

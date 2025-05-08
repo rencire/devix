@@ -29,11 +29,17 @@ in
       # Need to set specific jdk version for flutter.
       { devmods.languages.java.version = lib.mkForce jdkVersion; }
       # Need to set buildtools version for android, for sdk 34.
-      { devmods.android.buildTools.version = [ "33.0.1" ]; }
+      # TODO include logic to add 33.0.1 in head of list, if compileSdkVersion is 34
+      # { devmods.android.buildTools.versions = [ "33.0.1" ]; }
       # Set flutter settings to ouput flake
-      (import ./apps.nix)
-      (import ./packages.nix { inherit cfg; })
-      (import ./devShell.nix { inherit jdkVersion cfg; })
+      {
+        apps = import ./apps.nix;
+        packages = import ./packages.nix { androidCfg = config.devmods.android; };
+        devShell = import ./devShell.nix {
+          inherit jdkVersion;
+          androidCfg = config.devmods.android;
+        };
+      }
     ]
   );
 }

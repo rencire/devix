@@ -1,9 +1,17 @@
 # TODO
-- [] Get rid of the default versions.
+- [x] Get rid of the default versions.
   - We should not pass in options if user has not specified them. Then, androidenv will handle getting the latest version.
-- [] Track gradle version in nix.
-- [] Allow setting Android Gradle Plugin (AGP) version.
+- [x] Track gradle version in nix.
+- [x] Allow setting Android Gradle Plugin (AGP) version.
   - Need to downgrade (see: https://github.com/NixOS/nixpkgs/issues/395096#issuecomment-2850983875)
+- [] refactor "import ./<filename>.nix" to use the "imports = [ <filename> ]" pattern instead for idomatic nix.
+- [] Add support for "presets"
+- [] Add instructions in README on quick start
+- [] Test env on an android package
+  - already tested on flutter project w/ nix run .#flutter-init
+- [] Add support for preset 
+- [] Fix ndk version warning 
+- [] Add support for `minPlatformVersion`.
 
 
 # Support Matrix
