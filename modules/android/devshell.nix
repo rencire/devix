@@ -32,7 +32,7 @@ in
       os = builtins.elemAt (builtins.split "-" pkgs.stdenv.system) 2;
     in
     {
-      packages = with pkgs; [
+      packages = [
         androidSdk # reference our own sdk settings
       ];
 
