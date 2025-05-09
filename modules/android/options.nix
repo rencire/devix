@@ -1,18 +1,24 @@
 { lib, ... }:
+let
+  # presets = {
+  # "api-level-34" = {
+
+  # };
+  # };
+in
 {
   options.devmods.android = {
     enable = lib.mkEnableOption "tools for Android Development";
 
-    # gradle.version = lib.mkOption {
-    # Currently only support 8.8
-    # TODO add the other versions from nixpkgs.
-    # type = lib.types.str;
-    # default = "8.8";
-    # description = ''
-    # The version of gradle to se..
-    # By default, version 8.8 is installed.
-    # '';
-    # };
+    presets = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ "api-level-34" ];
+      description = ''
+        List of presets corresponding to specific versions of android-related
+        packages to use. 
+        By default, we use the last working versions to target API level 34.
+      '';
+    };
 
     androidGradlePlugin.version = lib.mkOption {
       type = lib.types.str;
