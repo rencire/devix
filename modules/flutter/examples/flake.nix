@@ -9,10 +9,13 @@
       inherit inputs;
       systems = [
         "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-linux"
       ];
       devmods = {
         android = {
           enable = true;
+          compileSdk.version = "34";
           platform.versions = [
             "34"
           ];
@@ -31,7 +34,6 @@
         };
         flutter = {
           enable = true;
-          compileSdkVersion = "34";
         };
       };
     };
