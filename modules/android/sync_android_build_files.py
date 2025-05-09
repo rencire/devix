@@ -1,3 +1,6 @@
+# flake8: noqa
+# Added above comment to bypass build issue with linting.
+# See: https://github.com/NixOS/nixpkgs/issues/269811
 import re
 import sys
 from pathlib import Path

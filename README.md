@@ -42,6 +42,12 @@ Here's an example creating a developer environment with android module:
   inputs.devmods.url = "github:rencire/devmods";
   outputs = { devmods, ... }: devmods ./. {
     # Developer Modules available under `devmods`.
+    inherit inputs;
+    systems = [
+      # Add systems for your machine here
+      "aarch64-darwin"
+    ];
+    # This is main attribute set where we define our module settings
     devmods = {
       android = {
         enable = true;
@@ -52,26 +58,11 @@ Here's an example creating a developer environment with android module:
         ];
       };
     };
-    devShell = pkgs: {
-      packages = with pkgs; [
-        # Add any other packages you need from nixpkgs
-        hello
-      ];
-      env = {
-        # Add whatever environment variables you need
-        MY_ENV_VAR="my env var value";
-      };
-      shellHook = ''
-        # Add whatever shell script you need
-        echo "Starting android shell..."
-      '';
-    };
+    # Can add other nix flake outputs attributes here
   };
 }
 ```
 
-Note that we can modify standard flake attributes like `devShell`.
-These tend to have `pkgs` available, since `devmods` is [`flakelight`](https://github.com/nix-community/flakelight) project.
 
 Alternatively, if you're already using [`flakelight`](https://github.com/nix-community/flakelight), you can
 add `devmods` as a `flakelight` module.
@@ -90,13 +81,48 @@ This is useful if you also have other flakelight modules to import:
     ];
     devmods = {
        # Devmod settings here
-       ...
     };
     # Rest of nix flake configuration goes here...
-    ...
   };
 }
 ```
+
+Other than `devmods`, you can add other standard`flakelight`/`nix flake` attributes as well.
+
+Here's an example with `devShell`:
+
+```nix
+{
+  inputs.devmods.url = "github:rencire/devmods";
+  outputs = { devmods, ... }: devmods ./. {
+    # Developer Modules available under `devmods`.
+    inherit inputs;
+    systems = [
+      # Add systems for your machine here
+      "aarch64-darwin"
+    ];
+    # This is main attribute set where we define our module settings
+    devmods = {
+    # Devmod settings here
+    };
+    # Can add other nix flake outputs attributes here.  
+    devShell = pkgs: {
+      packages = with pkgs; [hello];
+      env = {
+        MY_ENV_VAR = "my env var";
+      }
+      shellHook = ''
+        echo $MY_ENV_VAR
+      '';
+    }
+  };
+}
+```
+Note: These attributes tend to accept a function with `pkgs` available, since `devmods` itself is a [`flakelight`](https://github.com/nix-community/flakelight)
+module.
+- See: https://github.com/nix-community/flakelight/blob/master/API_GUIDE.md
+
+
 
 # Resources
 

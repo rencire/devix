@@ -12,9 +12,8 @@
         # 1) Create flutter initial project files
         flutter create .
         # 2) Update versions in files
-        ${pkgs.sync-android-build-files}/bin/update-android-file-versions "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}"
+        ${pkgs.sync-android-build-files}/bin/sync-android-build-files "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}"
 
-         
         # 3) add local.properties to ./anddroid/ folder
         # TODO consder referencing the nix packages instead of shell env vars
         # cat <<EOF > ./android/local.properties

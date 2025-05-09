@@ -1,3 +1,31 @@
+# Quickstart
+
+## Notes
+- Currently the flutter module assumes the following with your flutter project:
+  - If android devModule is specified, it will target Android API level 34 (or below?),
+    - Why 34 is latest? See: https://github.com/NixOS/nixpkgs/issues/395096
+  - Project structure for android is same as the one created from `flutter create .` command
+
+## Scenario A: Brand new project
+- Use template
+- run `nix develop`, (or use direnv to auto-load dev shell)
+- Will create a new default flutter project (i.e. uses `flutter create .`)
+```
+  
+```
+
+## Scenario B: Existing flutter project
+```
+````
+
+
+
+# Support Matrix
+| host os | host architecture | target platform | target platform version | target architecture | Status         | Notes                                                     |
+| ------- | ----------------- | --------------- | ----------------------- | ------------------- | -------------- | --------------------------------------------------------- |
+| darwin  | arm64-darwin      | android         | 34                      | arm64-v8a           | Able to launch | able to run the "flutter create" app on emulator.         |
+| darwin  | arm64-darwin      | macos           | 15.4                    | arm64-darwin        | Able to launch | able to run the "flutter create" app on a desktop window. |
+
 # TODO
 
 - [] Add instructions for quickstart, now that we have basic flutter project working w/ android sdk 34
