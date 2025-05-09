@@ -1,6 +1,5 @@
 {
   jdkVersion,
-  androidCfg,
 }:
 pkgs:
 let
@@ -82,8 +81,5 @@ in
     # Only way to not look at Android Studio is to explicity set jdk-dir. 
     # mkdir -p $HOME/.config/flutter
     ln -sf ${flutterSettingsFile} $HOME/.config/flutter/settings
-
-    # TODO create a compileSdkVersion for android module
-    ${pkgs.sync-android-build-files}/bin/sync-android-build-files "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}"
   '';
 }

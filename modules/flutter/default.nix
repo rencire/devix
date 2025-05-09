@@ -1,11 +1,12 @@
-{ config
-, lib
-, ...
+{
+  config,
+  lib,
+  ...
 }:
 
 let
   cfg = config.devmods.flutter;
-  jdkVersion = "17";
+  jdkVersion = "17"; # TODO remove this, we should force the version from "android" module side, if targetin api level 34 preset
 in
 {
   options.devmods.flutter = {
@@ -36,7 +37,6 @@ in
         packages = import ./packages.nix { androidCfg = config.devmods.android; };
         devShell = import ./devShell.nix {
           inherit jdkVersion;
-          androidCfg = config.devmods.android;
         };
       }
     ]

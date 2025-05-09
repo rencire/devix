@@ -20,11 +20,21 @@ in
       '';
     };
 
+    gradle.version = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      description = ''
+        The version of gradle to use. 
+        By default, this is empty string, which means we will not override
+        `devmods.gradle.version`. 
+      '';
+    };
+
     androidGradlePlugin.version = lib.mkOption {
       type = lib.types.str;
       default = ""; # last working version for flutter 3.29, and gradle 8.8
       description = ''
-        The version of android gradple plugin version to use. This is used
+        The version of android gradle plugin to use. This is used
         to update the version in `settings.gradle.kts` file.
         By default, this is empty string, which means we will not update the
         version in `settings.gradle.kts`. 

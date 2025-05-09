@@ -61,31 +61,32 @@ def update_agp_version(android_dir, version):
     edit_file_if_exists(file, pattern, repl, "Updating Android Gradle Plugin version")
 
 
-def replace_gradlew_with_wrapper(android_dir):
+def replace_gradlew_with_wrapper(android_dir, gradle_wrapper):
     gradlew_path = Path(android_dir) / "gradlew"
     log_info("Replacing gradlew with gradle-wrapper...")
 
     if gradlew_path.is_file():
         backup_path = gradlew_path.with_suffix(".bak")
         gradlew_path.rename(backup_path)
-        gradlew_path.symlink_to("${pkgs.gradle-wrapper}", target_is_directory=True)
+        gradlew_path.symlink_to(gradle_wrapper, target_is_directory=True)
         log_success("Replaced gradlew with gradle-wrapper")
     else:
         log_warn(f"File not found: {gradlew_path}")
 
 
 def main():
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
         print(
-            "Usage: sync-android-build-files <androidDir> <compileSdkVersion> <androidGradlePluginVersion>"
+            "Usage: sync-android-build-files <androidDir> <compileSdkVersion> <androidGradlePluginVersion> <gradleWrapper>"
         )
         sys.exit(1)
 
     android_dir = sys.argv[1]
     compile_sdk_version = sys.argv[2]
     agp_version = sys.argv[3]
+    gradle_wrapper = sys.argv[4]
 
-    replace_gradlew_with_wrapper(android_dir)
+    replace_gradlew_with_wrapper(android_dir, gradle_wrapper)
 
     if compile_sdk_version:
         update_compile_sdk_version(android_dir, compile_sdk_version)

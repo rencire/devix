@@ -1,6 +1,7 @@
-{ config
-, lib
-, # pkgs,
+{
+  config,
+  lib,
+  # pkgs,
   ...
 }:
 let
@@ -10,6 +11,7 @@ in
   imports = [
     # TODO consider using some flakelight utils (e.g. autoload folders)
     ./modules/languages/java.nix
+    ./modules/gradle/default.nix
     ./modules/android/default.nix
     ./modules/flutter/default.nix
   ];
