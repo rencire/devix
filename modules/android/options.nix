@@ -6,23 +6,45 @@ let
   options = {
     enable = lib.mkEnableOption "tools for Android Development";
 
-    deadbeef = lib.mkOption {
-      default = if cfg.foobar == [ "options.nix 3" ] then [ "deadbeef" ] else [ "false" ];
+    # deadbeef = lib.mkOption {
+    # default = if cfg.foobar == [ "options.nix 3" ] then [ "deadbeef" ] else [ "false" ];
+    # merge =
+    #   loc: defs:
+    #   let
+    #     values = map (x: x.value) defs;
+    #   in
+    #   (builtins.concatStringsSep "," values);
+    # };
+    #
+    # NOTE: issue with this solution is that this doesn't allow user to override.
+    #   We simply look at all teh values and combine them.
+    #
+    presetAttrs.deadbeef = lib.mkOption {
+      type = lib.mkOptionType {
+        name = "versionList";
+        merge =
+          loc: defs:
+          let
+            values = map (x: x.value) defs;
+            # test = builtins.trace "test" defs;
+          in
+          (builtins.concatStringsSep "," values);
+      };
     };
 
-    foobar = lib.mkOption {
+    presetAttrs.foobar = lib.mkOption {
       # type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
       # type = lib.types.str;
       # type = lib.types.listOf lib.types.str;
       # default = mergeSets.foobar;
       type = lib.mkOptionType {
         name = "version";
-        merge =
-          loc: defs:
-          let
-            values = map (x: x.value) defs;
-          in
-          (builtins.concatStringsSep "," values);
+        # merge =
+        #   loc: defs:
+        #   let
+        #     values = map (x: x.value) defs;
+        #   in
+        #   (builtins.concatStringsSep "," values);
       };
 
     };
@@ -293,9 +315,9 @@ let
   #     lib.foldl' (a: b: if lib.versionOlder a b then b else a) (lib.head values) (lib.tail values);
 
   mergeFunc =
-    key: a: b:
+    prefix: key: a: b:
     let
-      optionType = options.${key}.type;
+      optionType = options.${prefix}.${key}.type;
       typeString = builtins.toString optionType.name; # Convert type to string for comparison
       scalarTypeNameStrings = [
         "str"
@@ -310,44 +332,119 @@ let
     # "mergeFunc";
     # "${key}"";
     # TODO use the merge
-    b;
-  # if typeString == "listOf" then
-  #   # TODO check that the element type is a scalar value
-
-  #   [ typeString ]
-  # else if builtins.elem typeString scalarTypeNameStrings then
-  #   typeString
-  # else
-  #   typeString;
+    # b;
+    if typeString == "version" then
+      if lib.versionOlder a b then b else a
+    else if typeString == "listOf" then
+      # for now ,just merge ethem all together
+      a ++ b
+    else
+      # if typeString == "listOf" then
+      #   # TODO handle other cases.
+      #   # For now, we assume its a list of versionsstrings only
+      #   # Use versionOlder
+      # else if builtins.elem typeString scalarTypeNameStrings then
+      #   # TODO create own custom type for scalar verion strings
+      #   # Assume string is a version string
+      #   if lib.versionOlder a b then b else a
+      # else
+      # Default to the newer value on the right (b)
+      b;
   # if key == "foobar" then 9999 else a;
   #
   allPresets = {
     "a" = {
-      foobar = "options.nix a";
+      foobar = "1.1.1";
     };
     "b" = {
-      foobar = "options.nix b";
+      foobar = "1.1.2";
     };
     "c" = {
-      foobar = "options.nix c";
+      foobar = "2.0.1";
     };
   };
 
-  mergeSets = myLib.mergeListOfSets {
-    inherit mergeFunc;
-    attrSets = [
-      allPresets.${lib.elemAt cfg.presets 0}
-      allPresets.${lib.elemAt cfg.presets 1}
-    ];
+  selectedPresets = map (key: allPresets.${key}) cfg.presets;
+
+  # mergedSets = myLib.mergeListOfSets {
+  #   inherit mergeFunc;
+  #   prefix = "presetAttrs";
+  #   attrSets = selectedPresets;
+  # };
+
+  deadbeefpresets = {
+    "a" = {
+      deadbeef = "1.1.1";
+    };
+    "b" = {
+      deadbeef = "1.1.2";
+    };
+    "c" = {
+      deadbeef = "2.0.1";
+    };
   };
+
+  selectedDeadbeefPresets = map (key: deadbeefpresets.${key}) cfg.presets;
+  selectedDeadbeefPresetsWithDefault = map (
+    attrs: lib.mapAttrs (_k: v: lib.mkDefault v) attrs
+  ) selectedDeadbeefPresets;
+
+  # selectedPresets = map (key: allPresets.${key}) cfg.presets;
 in
 {
   options.devmods.android = options;
   # TODO test mergeSets
-  config.devmods.android = map (key: allPresets.${key}) cfg.presets;
-
-  # {
-  # apply the values from presets here
-  # foobar = lib.mkDefault mergeSets.foobar;
+  # config.devmods.android = map (key: allPresets.${key}) cfg.presets;
+  # config.devmods.android = {
+  #   # foobar = lib.mkDefault "1.2.3";
+  #   foobar = mergedSets.foobar;
   # };
+  #
+  #
+  # NOTE: this works below
+  # config.devmods.android.presetAttrs = mergedSets;
+
+  config.devmods.android.presetAttrs = lib.mkMerge selectedDeadbeefPresetsWithDefault;
+
+  # let
+  # names = lib.attrNames mergedSets;
+  # in
+  # {
+  # foobar = lib.mkDefault "1.2.3";
+  # foobar = mergedSets.${lib.elemAt names 0};
+  # };
+  #
+  # config.devmods.android = mergedSets;
+  # } // mergedSets;
+
+  # config.devmods.android = lib.mkMerge [
+  # { foobar = "abc"; }
+  # (lib.getAttr "${lib.elemAt cfg.presets 0}" allPresets)
+  # ];
+  # config.devmods.android =
+  #   let
+  #     selectedPresets = lib.getAttrs cfg.presets allPresets;
+  #     attrValues = lib.attrValues selectedPresets;
+  #   in
+  #   lib.mkMerge attrValues;
+  # # lib.mkMerge [
+  # { foobar = lib.getAttr "foobar" (lib.getAttr "${lib.elemAt cfg.presets 0}" allPresets); }
+  # { foobar = lib.getAttr "foobar" (lib.getAttr "${lib.elemAt cfg.presets 1}" allPresets); }
+
+  # ];
+
+  # let
+  # selectedPresets = lib.getAttrs cfg.presets allPresets;
+  # in
+  # lib.mkMerge (lib.attrValues selectedPresets);
+  # config.devmods.android = lib.mkMerge [
+  # selectedPresets
+  #   {
+  #     # apply the values from presets here
+  #     # foobar = lib.mkDefault mergeSets.foobar;
+  #     foobar = "abc";
+  #   }
+  # { foobar = "123"; }
+  # { foobar = "${lib.elemAt cfg.presets 0}"; }
+  # ];
 }

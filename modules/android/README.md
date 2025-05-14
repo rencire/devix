@@ -24,3 +24,21 @@
 
 - Could not get Android 35 to work, some issue with AGP version, and maybe Gradle as well?
   - To be able to load app on android emulator, need to explicitly change `compleSdk` and `targetSdk` to `34` in <flutter_app>/android/app/build.gradle`.
+
+
+#### Presets
+
+- Ran into infinte recursioin issue, but resolved by putting the preset attributes in its own neseted
+  attribute et one level below "presets"
+
+- Have two potential approaches to supporting presets:
+  - 1) Create own function to go through and merge prset options together
+    - Don't need to be recrursive in beginnging, but will need to think about nested options in future.
+    - How do we support user overrides? Does mkDefault work?
+  - 2) Create own custom option type
+    - Leverages existing mkMerge functionality nixpkgs provides
+    - Not sure if this can fulfill all of our use cases:
+       - e.g. How do we allow user overrides? But is this same issue with approach 1?    
+         Would both be solved by using mkDefault?
+       - UPDATE: it seems adding "mkDefault" worked.
+

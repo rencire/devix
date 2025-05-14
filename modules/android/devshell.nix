@@ -226,8 +226,7 @@ in
 
           # Sync build files
           # ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${cfg.compileSdk.version}" "${cfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
-          ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${cfg.foobar}" "${cfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
-          # ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${lib.head cfg.deadbeef}" "${cfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
+          ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${cfg.presetAttrs.deadbeef}" "${cfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
           set +e
         '';
     }
