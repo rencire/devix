@@ -90,9 +90,17 @@ def main():
 
     if compile_sdk_version:
         update_compile_sdk_version(android_dir, compile_sdk_version)
+    else:
+        print(
+            f"Did not update compileSdk version. Invalid version provided: {compile_sdk_version}"
+        )
 
     if agp_version:
         update_agp_version(android_dir, agp_version)
+    else:
+        print(
+            f"Did not update AGP version. Invalid version provided: {compile_sdk_version}"
+        )
 
     # TODO update ndk.version in `gradle.properties` file
     # - append line if it doesn't exist

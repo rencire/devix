@@ -1,18 +1,35 @@
-{ lib, ... }:
+{ config, lib, ... }:
 let
-  # presets = {
-  # "api-level-34" = {
+  cfg = config.devmods.android;
+  myLib = import ./lib.nix;
 
-  # };
-  # };
-in
-{
-  options.devmods.android = {
+  options = {
     enable = lib.mkEnableOption "tools for Android Development";
+
+    deadbeef = lib.mkOption {
+      default = if cfg.foobar == [ "options.nix 3" ] then [ "deadbeef" ] else [ "false" ];
+    };
+
+    foobar = lib.mkOption {
+      # type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
+      # type = lib.types.str;
+      # type = lib.types.listOf lib.types.str;
+      # default = mergeSets.foobar;
+      type = lib.mkOptionType {
+        name = "version";
+        merge =
+          loc: defs:
+          let
+            values = map (x: x.value) defs;
+          in
+          (builtins.concatStringsSep "," values);
+      };
+
+    };
 
     presets = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = [ "api-level-34" ];
+      # default = [ "latest" ];
       description = ''
         List of presets corresponding to specific versions of android-related
         packages to use. 
@@ -20,19 +37,21 @@ in
       '';
     };
 
-    gradle.version = lib.mkOption {
-      type = lib.types.str;
-      default = "";
-      description = ''
-        The version of gradle to use. 
-        By default, this is empty string, which means we will not override
-        `devmods.gradle.version`. 
-      '';
-    };
+    # TODO create a dynamic option
+
+    # gradle.version = lib.mkOption {
+    #   type = lib.types.str;
+    #   default = "";
+    #   description = ''
+    #     The version of gradle to use.
+    #     By default, this is empty string, which means we will not override
+    #     `devmods.gradle.version`.
+    #   '';
+    # };
 
     androidGradlePlugin.version = lib.mkOption {
       type = lib.types.str;
-      default = ""; # last working version for flutter 3.29, and gradle 8.8
+      # default = ""; # last working version for flutter 3.29, and gradle 8.8
       description = ''
         The version of android gradle plugin to use. This is used
         to update the version in `settings.gradle.kts` file.
@@ -43,7 +62,7 @@ in
 
     compileSdk.version = lib.mkOption {
       type = lib.types.str;
-      default = "";
+      # default = "";
       description = ''
         The version of android gradple plugin version to use. This is used
         to update the version in `app/build.gradle.kts` file.
@@ -156,6 +175,7 @@ in
 
     ndk.versions = lib.mkOption {
       type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
+      # TODO figure out if newer version also works
       default = [ "26.1.10909125" ];
       description = ''
         The version of the Android NDK (Native Development Kit) to install.
@@ -207,4 +227,127 @@ in
       '';
     };
   };
+  # presets = {
+  #   "api-level-34" = {
+  #     androidGradlePluginVersion = "8.6.0";
+  #     compileSdkVersion = "34";
+  #     platformVersions = [ "34" ];
+  #     buildToolsVersions = [ "34.0.0" ];
+  #     cmakeVersions = [ "3.22.1" ];
+  #     ndkVersions = [
+  #       "26.3.11579264"
+  #     ];
+  #     # TODO
+  #     # This value should override devmods.gradle.version
+  #     # Note: do we want to maybe move this "preset" into a different module, like an "integrations" module?
+  #     gradleVersion = "8.8";
+  #     # TODO
+  #     # This value should override devmods.languages.java.version
+  #     # Note: do we want to maybe move this "preset" into a different module, like an "integrations" module?
+  #     jdkVersion = "17";
+  #   };
+  #   "test" = {
+  #     androidGradlePluginVersion = "9.9.9";
+  #     compileSdkVersion = "99";
+  #     platformVersions = [ "99" ];
+  #   };
+  #   # "latest" = {
+  #   #   androidGradlePluginVersion = "";
+  #   #   compileSdkVersion = "";
+  #   #   platformVersions = [ "latest" ];
+  #   #   buildToolsVersions = [ "latest" ];
+  #   #   cmakeVersions = [ "3.31.6" ]; # TODO check if this takes in "latest" string
+  #   #   ndkVersions = [ "26.1.10909125" ]; # TODO check if this takes in "latest" string
+  #   # };
+  # };
+  # # allPresets = presets // cfg.customPresets;
+  # allPresets = presets;
+
+  # selectedPresets = lib.filterAttrs (name: _: lib.elem name cfg.presets) allPresets;
+
+  # getList =
+  #   attrName: selectedPresets:
+  #   let
+  #     values = lib.filter (x: x != null) (
+  #       map (
+  #         preset:
+  #         if selectedPresets.${preset} ? ${attrName} then selectedPresets.${preset}.${attrName} else null
+  #       ) (builtins.attrNames selectedPresets)
+  #     );
+  #   in
+  #   lib.unique (lib.flatten values);
+
+  # getScalar =
+  #   attrName: selectedPresets:
+  #   let
+  #     values = lib.filter (x: x != null) (
+  #       map (
+  #         preset:
+  #         if selectedPresets.${preset} ? ${attrName} then selectedPresets.${preset}.${attrName} else null
+  #       ) (builtins.attrNames selectedPresets)
+  #     );
+  #   in
+  #   if values == [ ] then
+  #     null
+  #   else
+  #     lib.foldl' (a: b: if lib.versionOlder a b then b else a) (lib.head values) (lib.tail values);
+
+  mergeFunc =
+    key: a: b:
+    let
+      optionType = options.${key}.type;
+      typeString = builtins.toString optionType.name; # Convert type to string for comparison
+      scalarTypeNameStrings = [
+        "str"
+        "int"
+      ];
+    in
+    # TODO: if a and b are attrsets, need to recurse them. Need to pass in a prefix path also,
+    # so that we can access nested options.
+
+    # TODO: only support lists, str, and either
+    # builtins.trace "Type of ${key} is: ${typeString}" typeString; # Print typeString for debugging
+    # "mergeFunc";
+    # "${key}"";
+    # TODO use the merge
+    b;
+  # if typeString == "listOf" then
+  #   # TODO check that the element type is a scalar value
+
+  #   [ typeString ]
+  # else if builtins.elem typeString scalarTypeNameStrings then
+  #   typeString
+  # else
+  #   typeString;
+  # if key == "foobar" then 9999 else a;
+  #
+  allPresets = {
+    "a" = {
+      foobar = "options.nix a";
+    };
+    "b" = {
+      foobar = "options.nix b";
+    };
+    "c" = {
+      foobar = "options.nix c";
+    };
+  };
+
+  mergeSets = myLib.mergeListOfSets {
+    inherit mergeFunc;
+    attrSets = [
+      allPresets.${lib.elemAt cfg.presets 0}
+      allPresets.${lib.elemAt cfg.presets 1}
+    ];
+  };
+in
+{
+  options.devmods.android = options;
+  # TODO test mergeSets
+  config.devmods.android = map (key: allPresets.${key}) cfg.presets;
+
+  # {
+  # apply the values from presets here
+  # foobar = lib.mkDefault mergeSets.foobar;
+  # };
 }
