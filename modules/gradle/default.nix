@@ -18,6 +18,8 @@ in
   config = lib.mkIf cfg.enable {
     packages = {
       # Use our `devmods` namespace under `packages`
+      # TODO change, this, can't use `devmods` for other modules, since it conflicts. probably need to
+      # resort to another method for namespace, or forego it alltogether.
       devmods =
         pkgs:
         let

@@ -5,17 +5,6 @@ let
   options = {
     enable = lib.mkEnableOption "tools for Android Development";
 
-    settings.platform.compileSdkVersion = lib.mkOption {
-      type = types.version;
-      default = "";
-      description = ''
-        The version of android sdk version to use. This is used
-        to update the version in `app/build.gradle.kts` file.
-        By default, this is empty string, which means we will not update the
-        version in `app/build.gradle.kts`. 
-      '';
-    };
-
     # settings.deadbeef = lib.mkOption {
     #   type = types.version;
     #   default = "latest";
@@ -39,6 +28,29 @@ let
       '';
     };
 
+    settings = {
+      androidGradlePlugin.version = lib.mkOption {
+        type = lib.types.str;
+        default = "";
+        description = ''
+          The version of android gradle plugin to use. This is used
+          to update the version in `settings.gradle.kts` file.
+          By default, this is empty string, which means we will not update the
+          version in `settings.gradle.kts`. 
+        '';
+      };
+      platform.compileSdkVersion = lib.mkOption {
+        type = types.version;
+        default = "";
+        description = ''
+          The version of android sdk version to use. This is used
+          to update the version in `app/build.gradle.kts` file.
+          By default, this is empty string, which means we will not update the
+          version in `app/build.gradle.kts`. 
+        '';
+      };
+    };
+
     # TODO create a dynamic option
 
     # gradle.version = lib.mkOption {
@@ -52,17 +64,6 @@ let
     # };
 
     # TODO move each option to `settings` above
-
-    androidGradlePlugin.version = lib.mkOption {
-      type = lib.types.str;
-      default = "";
-      description = ''
-        The version of android gradle plugin to use. This is used
-        to update the version in `settings.gradle.kts` file.
-        By default, this is empty string, which means we will not update the
-        version in `settings.gradle.kts`. 
-      '';
-    };
 
     cmdLineTools.version = lib.mkOption {
       type = lib.types.either (lib.types.enum [ "latest" ]) lib.types.str;
@@ -232,34 +233,43 @@ let
   #   scalar values are merged into a single oldest version.  (See `version` type in `types.nix`).
   # - All default values defined in `options` get replaced with preset values.
   # - User-provided values have highest priority, and will override all.
+
   presets = {
     "api-34" = {
+      androidGradlePlugin.version = "8.6.0";
       platform.compileSdkVersion = "34";
+      # platform.versions = [ "34" ];
+      # buildTools.versions = [ "34.0.0" ];
+      # cmake.versions = [ "3.22.1" ];
+      # ndk.versions = [
+      # "26.3.11579264"
+      # ];
+      # TODO
+      # This value should override devmods.gradle.version
+      # Note: do we want to maybe move this "preset" into a different module, like an "integrations" module?
+      # gradleVersion = "8.8";
+      # TODO
+      # This value should override devmods.languages.java.version
+      # Note: do we want to maybe move this "preset" into a different module, like an "integrations" module?
+      # jdkVersion = "17";
     };
-    "b" = {
-      deadbeef = "1.1.2";
-      foobar = [
-        "2.0"
-      ];
-    };
-    "c" = {
-      deadbeef = "2.0.1";
+    "test" = {
+      platform.compileSdkVersion = "34";
     };
   };
 
   # Returns list of preset attributes from preset names that are specified by the user
-  selectedPresets = map (key: presets.${key}) cfg.presets;
+  selectedPresetSettingsList = map (key: presets.${key}) cfg.presets;
 
+  # Recursively adds "mkDefault" to all leaf nodes in attrSet, for each preset.
+  # This is so we can support nested options.
   mkDefaultLeaves =
-    attrs:
-    # Recursively adds "mkDefault" to all leaf nodes in attrSet, for each preset.
-    # This is so we can support nested options.
-    lib.mapAttrs (k: v: if builtins.isAttrs v then mkDefaultLeaves v else lib.mkDefault v) attrs;
+    attrs: lib.mapAttrs (k: v: if builtins.isAttrs v then mkDefaultLeaves v else lib.mkDefault v) attrs;
 
-  selectedDeadbeefPresetsWithDefault = map mkDefaultLeaves selectedPresets;
+  selectedPresetSettingsWithMkDefault = map mkDefaultLeaves selectedPresetSettingsList;
 in
 {
   options.devmods.android = options;
-  # Apply attributes from selected presets
-  config.devmods.android.settings = lib.mkMerge selectedDeadbeefPresetsWithDefault;
+  # Apply settings from selected presets
+  config.devmods.android.settings = lib.mkMerge selectedPresetSettingsWithMkDefault;
 }
