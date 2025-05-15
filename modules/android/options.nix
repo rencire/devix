@@ -5,13 +5,24 @@ let
   options = {
     enable = lib.mkEnableOption "tools for Android Development";
 
-    settings.deadbeef = lib.mkOption {
+    settings.platform.compileSdkVersion = lib.mkOption {
       type = types.version;
-      default = "latest";
+      default = "";
       description = ''
-        For testing.
+        The version of android sdk version to use. This is used
+        to update the version in `app/build.gradle.kts` file.
+        By default, this is empty string, which means we will not update the
+        version in `app/build.gradle.kts`. 
       '';
     };
+
+    # settings.deadbeef = lib.mkOption {
+    #   type = types.version;
+    #   default = "latest";
+    #   description = ''
+    #     For testing.
+    #   '';
+    # };
 
     settings.foobar = lib.mkOption {
       type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
@@ -59,17 +70,6 @@ let
       description = ''
         The version of the Android command line tools to install.
         By default, latest version from nixpkgs is installed.
-      '';
-    };
-
-    platform.compileSdkVersion = lib.mkOption {
-      type = lib.types.str;
-      # default = "";
-      description = ''
-        The version of android sdk version to use. This is used
-        to update the version in `app/build.gradle.kts` file.
-        By default, this is empty string, which means we will not update the
-        version in `app/build.gradle.kts`. 
       '';
     };
 
@@ -233,9 +233,8 @@ let
   # - All default values defined in `options` get replaced with preset values.
   # - User-provided values have highest priority, and will override all.
   presets = {
-    "a" = {
-      deadbeef = "1.1.1";
-      foobar = [ "1" ];
+    "api-34" = {
+      platform.compileSdkVersion = "34";
     };
     "b" = {
       deadbeef = "1.1.2";

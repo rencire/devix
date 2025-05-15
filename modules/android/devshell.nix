@@ -225,7 +225,7 @@ in
           test -e "$ANDROID_AVD_HOME" || mkdir -p "$ANDROID_AVD_HOME"
 
           # Sync build files
-          ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${lib.elemAt cfg.settings.foobar 0}" "${cfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
+          ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${cfg.settings.platform.compileSdkVersion}" "${cfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
           set +e
         '';
     }
