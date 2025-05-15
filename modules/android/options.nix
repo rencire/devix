@@ -2,7 +2,7 @@
 let
   cfg = config.devmods.android;
   myLib = import ./lib.nix;
-
+  types = import ./types.nix { inherit lib; };
   options = {
     enable = lib.mkEnableOption "tools for Android Development";
 
@@ -20,32 +20,28 @@ let
     #   We simply look at all teh values and combine them.
     #
     presetAttrs.deadbeef = lib.mkOption {
-      type = lib.mkOptionType {
-        name = "versionList";
-        merge =
-          loc: defs:
-          let
-            values = map (x: x.value) defs;
-            # test = builtins.trace "test" defs;
-          in
-          (builtins.concatStringsSep "," values);
-      };
+      type = types.version;
+      default = "latest";
+      description = ''
+        For testing.
+      '';
     };
 
     presetAttrs.foobar = lib.mkOption {
-      # type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
+      type = lib.types.listOf (lib.types.either (lib.types.enum [ "latest" ]) (lib.types.str));
+      default = [ "latest" ];
       # type = lib.types.str;
       # type = lib.types.listOf lib.types.str;
       # default = mergeSets.foobar;
-      type = lib.mkOptionType {
-        name = "version";
-        # merge =
-        #   loc: defs:
-        #   let
-        #     values = map (x: x.value) defs;
-        #   in
-        #   (builtins.concatStringsSep "," values);
-      };
+      # type = lib.mkOptionType {
+      # name = "version";
+      # default = ["latest"]
+      # merge =
+      #   loc: defs:
+      #   let
+      #     values = map (x: x.value) defs;
+      #   in
+      #   (builtins.concatStringsSep "," values);
 
     };
 
@@ -380,16 +376,23 @@ let
       deadbeef = "1.1.2";
     };
     "c" = {
-      deadbeef = "2.0.1";
+      # deadbeef = "2.0.1";
     };
   };
 
+  # Returns list of preset attributes
   selectedDeadbeefPresets = map (key: deadbeefpresets.${key}) cfg.presets;
-  selectedDeadbeefPresetsWithDefault = map (
-    attrs: lib.mapAttrs (_k: v: lib.mkDefault v) attrs
-  ) selectedDeadbeefPresets;
 
-  # selectedPresets = map (key: allPresets.${key}) cfg.presets;
+  mkDefaultLeaves =
+    attrs:
+    # Recursively adds "mkDefault" to all leaf nodes in attrSet, for each preset.
+    # This is so we can support nested options.
+    lib.mapAttrs (k: v: if builtins.isAttrs v then mkDefaultLeaves v else lib.mkDefault v) attrs;
+
+  selectedDeadbeefPresetsWithDefault = map mkDefaultLeaves selectedDeadbeefPresets;
+
+  # TODO
+  # Add "default" values if option value does not exist.
 in
 {
   options.devmods.android = options;
