@@ -1,6 +1,8 @@
 { config, lib, ... }:
 let
   cfg = config.devmods.modules.flutter;
+  # TODO consider setting `androidCfg.compileSdk.version` and `pkgs.devmods.gradle-wrapper`
+  # as options available to this module, so that this module is more encapsulated.
   androidCfg = config.devmods.modules.android;
 in
 {

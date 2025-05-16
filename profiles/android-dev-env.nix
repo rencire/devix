@@ -43,17 +43,23 @@ in
       '';
     };
 
-    android.presets = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [ ];
-      description = "Override android module's `presets` options.";
+    android = lib.mkOption {
+      type = lib.types.submodule (import ../modules/android/default.nix);
+      default = { };
+      description = "Android-specific configuration.";
     };
 
-    android.settings = lib.mkOption {
-      type = lib.types.attrs;
-      default = { };
-      description = "Override android module's `settings` options.";
-    };
+    # android.presets = lib.mkOption {
+    #   type = lib.types.listOf lib.types.str;
+    #   default = [ ];
+    #   description = "Override android module's `presets` options.";
+    # };
+
+    # android.settings = lib.mkOption {
+    #   type = lib.types.attrs;
+    #   default = { };
+    #   description = "Override android module's `settings` options.";
+    # };
 
     # Pass in java and gradle version if need to override
     java.version = lib.mkOption {
@@ -87,8 +93,8 @@ in
           android = {
             enable = true;
             # TODO why does this line below feetch latest android sdk? is it not being overridden by the preset "android-api-34"?
-            presets = lib.optionalAttrs (lib.hasAttrByPath [ "android" "presets" ] cfg) cfg.android.presets;
-            settings = lib.optionalAttrs (lib.hasAttrByPath [ "android" "settings" ] cfg) cfg.android.settings;
+            # presets = lib.optionalAttrs (lib.hasAttrByPath [ "android" "presets" ] cfg) cfg.android.presets;
+            # settings = lib.optionalAttrs (lib.hasAttrByPath [ "android" "settings" ] cfg) cfg.android.settings;
           };
         }
       ]

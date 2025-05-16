@@ -6,8 +6,6 @@ in
   config.devShell = lib.mkIf cfg.enable (
     pkgs:
     let
-      # TODO make sure we force the version from "android" module side, if targetin api level 34 preset
-      # TODO we should move this up to "profile"
       jdkPackage = pkgs."jdk${config.devmods.modules.languages.java.version}";
 
       # We need to modify this because flutter annoyingly checks for jdk on
@@ -55,26 +53,14 @@ in
     {
       packages = with pkgs; [
         patchedFlutter
-        # inputs'.self.packages.flutter-proxy
-        # For macos/ios
-        (xcodeenv.composeXcodeWrapper { versions = [ "16.3" ]; })
-        cocoapods
-        google-chrome
       ];
 
       env = {
         FLUTTER_ROOT = "${patchedFlutter}";
         DART_ROOT = "${patchedFlutter}/bin/cache/dart-sdk";
-        # Can't use chromium unfortunately on darwin, so resort to google-chrome
-        CHROME_EXECUTABLE = lib.getExe pkgs.google-chrome;
       };
 
       shellHook = ''
-        # Need to unset below variables so that they aren't bound to outdated SDKs.
-        # Found I needed to do this in order to properly read the system xcode app.
-        unset DEVELOPER_DIR
-        unset SDKROOT
-
         # 1) Create a symlink to the settings file in the home directory
         # 
         # Need this beccause flutter will priporitize using the same java version as Android Studio if it exists.
