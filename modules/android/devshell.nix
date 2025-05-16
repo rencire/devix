@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.android;
+  cfg = config.devmods.modules.android;
   cfgSettings = cfg.settings;
 
   sdkArgs = {
@@ -66,8 +66,9 @@ in
         };
 
         shellHook =
+          # TODO move this shellHook to profiles.android
           let
-            androidDir = if config.devmods.flutter.enable then "./android/" else ".";
+            androidDir = if config.devmods.modules.flutter.enable then "./android/" else ".";
           in
           ''
             set -e

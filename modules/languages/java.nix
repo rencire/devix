@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.devmods.languages.java;
+  cfg = config.devmods.modules.languages.java;
 in
 {
-  options.devmods.languages.java = {
+  options.devmods.modules.languages.java = {
     # Option to enable or disable Java package
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -19,13 +19,15 @@ in
 
     # Option to select the Java package (JDK version)
     version = lib.mkOption {
-      type = dmTypes.version;
-      default = "23";
+      type = lib.types.nullOr dmTypes.version;
+      default = null;
       description = ''
         The Java package (JDK version) to use. You can specify versions that exist in nixpkgs.
         e.g. 17, 23
         If multiple versions are specified in the configuration, because we're using `dmTypes.version`, we
         will take the highest version of all the conflicting values.
+        If no value is specified, defaults to `null` value, resulting in us using the latest `jdk` package from nixpkgs.
+        If value is an empty string, behavior is undefined.
       '';
     };
 
@@ -46,8 +48,7 @@ in
     devShell =
       pkgs:
       let
-        jdkPackage = pkgs."jdk${cfg.version}";
-        # jdkPackage = cfg.package;
+        jdkPackage = if cfg.version == null then pkgs.jdk else pkgs."jdk${cfg.version}";
       in
       {
         packages = [

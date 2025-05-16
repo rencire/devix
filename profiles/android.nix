@@ -7,24 +7,33 @@
   ...
 }:
 let
-  cfg = config.devmods.profiles.android;
+  cfg = config.devmods.profiles.android-dev-env;
   presets = {
     "android-api-34" = {
-      modules.languages.java.version = "17";
-      modules.gradle.version = "8.8";
-      modules.android.presets = [ "api-34" ];
-    };
-    "android-api-35" = {
-
+      languages.java = {
+        version = "17";
+      };
+      gradle = {
+        version = "8.8";
+      };
+      android = {
+        # TODO Why do we need to set this? shouldn't we have mkDefault already?
+        # Do we need to set priority for the other values as well? and also in modules.android?
+        presets = {
+          _priority = 100;
+          _value = [ "api-34" ];
+        };
+      };
     };
   };
 
   selectedPresetSettingsList = map (key: presets.${key}) cfg.presets;
   # \2 Add mkDefault and mkOverride to the settings
   selectedPresetsListWithMkDefaultAndOverride = map dmUtils.mkDefaultLeaves selectedPresetSettingsList;
+
 in
 {
-  options.profiles.android = {
+  options.devmods.profiles.android-dev-env = {
     enable = lib.mkEnableOption "Enable the Android development environment";
     presets = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -35,7 +44,7 @@ in
     };
 
     android.presets = lib.mkOption {
-      type = lib.types.attrs;
+      type = lib.types.listOf lib.types.str;
       default = [ ];
       description = "Override android module's `presets` options.";
     };
@@ -49,19 +58,40 @@ in
     # Pass in java and gradle version if need to override
     java.version = lib.mkOption {
       type = dmTypes.version;
+      default = null;
       description = "Override java module's `version` option.";
     };
 
     gradle.version = lib.mkOption {
-      type = lib.types.str;
-      default = "";
+      type = lib.types.nullOr lib.types.str;
+      default = null;
       description = "Override gradle module's `version` option.";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    # TODO refacotr existing "modules" to have "modules" in prefix namespace.
-    # e.g.  "devmods.modules.<module_name>"
-    devmods = lib.mkMerge selectedPresetsListWithMkDefaultAndOverride;
+    devmods.modules = lib.mkMerge (
+      # Merge in settings from presets defined for this "android profile"
+      selectedPresetsListWithMkDefaultAndOverride
+      ++ [
+        # Pass in overrides for other options not set by presets
+        {
+          gradle = {
+            enable = true;
+            version = lib.optionalAttrs (lib.hasAttrByPath [ "gradle" "version" ] cfg) cfg.gradle.version;
+          };
+          languages.java = {
+            enable = true;
+            version = lib.optionalAttrs (lib.hasAttrByPath [ "java" "version" ] cfg) cfg.java.version;
+          };
+          android = {
+            enable = true;
+            # TODO why does this line below feetch latest android sdk? is it not being overridden by the preset "android-api-34"?
+            presets = lib.optionalAttrs (lib.hasAttrByPath [ "android" "presets" ] cfg) cfg.android.presets;
+            settings = lib.optionalAttrs (lib.hasAttrByPath [ "android" "settings" ] cfg) cfg.android.settings;
+          };
+        }
+      ]
+    );
   };
 }

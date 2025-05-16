@@ -1,13 +1,13 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.gradle;
+  cfg = config.devmods.modules.gradle;
 in
 {
-  options.devmods.gradle = {
+  options.devmods.modules.gradle = {
     enable = lib.mkEnableOption "Gradle devModule";
     version = lib.mkOption {
-      type = lib.types.str;
-      default = "";
+      type = lib.types.nullOr lib.types.str;
+      default = null;
       description = ''
         The version of gradle to use. 
         By default, this is empty string, which means we will use the latest version.
@@ -22,21 +22,29 @@ in
       # resort to another method for namespace, or forego it alltogether.
       devmods =
         pkgs:
-        let
-          gradleMap = import ./gradle_version_gen_config_map.nix { inherit pkgs; };
-          genConfig = gradleMap."${cfg.version}";
-          gradle-generated = pkgs.gradleGen genConfig;
-          gradle-unwrapped = pkgs.callPackage gradle-generated { };
-          devmod-gradle = pkgs.wrapGradle gradle-unwrapped null;
-        in
-        {
-          # add our own devmod gradle under`devmods.gradle`
-          gradle = if cfg.version == "" then pkgs.gradle else devmod-gradle;
-          gradle-wrapper = pkgs.writeShellScript "gradle-wrapper" ''
-            # We're using the `gradle` we just defined above.
-            ${devmod-gradle}/bin/gradle "$@"
-          '';
-        };
+        if cfg.version == null then
+          {
+            gradle = pkgs.gradle;
+            gradle-wrapper = pkgs.writeShellScript "gradle-wrapper" ''
+              ${pkgs.gradle}/bin/gradle "$@"
+            '';
+          }
+        else
+          let
+            gradleMap = import ./gradle_version_gen_config_map.nix { inherit pkgs; };
+            genConfig = gradleMap."${cfg.version}";
+            gradle-generated = pkgs.gradleGen genConfig;
+            gradle-unwrapped = pkgs.callPackage gradle-generated { };
+            devmod-gradle = pkgs.wrapGradle gradle-unwrapped null;
+          in
+          {
+            # add our own devmod gradle under`devmods.gradle`
+            gradle = devmod-gradle;
+            gradle-wrapper = pkgs.writeShellScript "gradle-wrapper" ''
+              # We're using the `gradle` we just defined above.
+              ${devmod-gradle}/bin/gradle "$@"
+            '';
+          };
     };
     devShell =
       pkgs: with pkgs; {

@@ -6,9 +6,9 @@
   ...
 }:
 let
-  cfg = config.devmods.android;
+  cfg = config.devmods.modules.android;
   options = {
-    enable = lib.mkEnableOption "tools for Android Development";
+    enable = lib.mkEnableOption "Enable dependencies for Android tools";
 
     # settings.deadbeef = lib.mkOption {
     #   type = types.version;
@@ -25,6 +25,8 @@ let
 
     presets = lib.mkOption {
       type = lib.types.listOf lib.types.str;
+      # TODO figure out why this
+      # type = dmTypes.debug;
       default = [ ];
       description = ''
         List of presets corresponding to specific versions of android-related
@@ -326,12 +328,12 @@ let
   # languagesJavaList = partitionedPresetLists.languagesJavaList;
 in
 {
-  options.devmods.android = options;
+  options.devmods.modules.android = options;
   # \4 Apply settings
   # config.devmods.android.settings = lib.mkMerge androidSettingsList;
   # config.devmods.languages.java = lib.mkMerge languagesJavaList;
 
-  config.devmods.android.settings = lib.mkMerge selectedPresetsListWithMkDefaultAndOverride;
+  config.devmods.modules.android.settings = lib.mkMerge selectedPresetsListWithMkDefaultAndOverride;
 
   # config.devmods.android.settings = lib.mkMerge (
   # selectedPresetSettingsWithMkDefault.android.settings

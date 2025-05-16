@@ -1,13 +1,14 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.flutter;
+  cfg = config.devmods.modules.flutter;
 in
 {
   config.devShell = lib.mkIf cfg.enable (
     pkgs:
     let
       # TODO make sure we force the version from "android" module side, if targetin api level 34 preset
-      jdkPackage = pkgs."jdk${config.devmods.languages.java.version}";
+      # TODO we should move this up to "profile"
+      jdkPackage = pkgs."jdk${config.devmods.modules.languages.java.version}";
 
       # We need to modify this because flutter annoyingly checks for jdk on
       # installed Anddroid studio first, before considering JAVA_HOME.  So typical method

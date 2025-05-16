@@ -1,5 +1,9 @@
 { lib, ... }:
 {
+  debug = lib.mkOptionType {
+    name = "debug";
+    merge = loc: defs: defs.file;
+  };
   version = lib.mkOptionType {
     name = "version";
     # TODO add a `isVersion` checker function

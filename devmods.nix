@@ -21,6 +21,7 @@ in
     ./modules/gradle/default.nix
     ./modules/android/default.nix
     ./modules/flutter/default.nix
+    ./profiles/android.nix
   ];
 
   options.devmods.common.allowUnfree = lib.mkOption {

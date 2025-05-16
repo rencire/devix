@@ -5,7 +5,7 @@
 }:
 
 let
-  cfg = config.devmods.flutter;
+  cfg = config.devmods.modules.flutter;
 in
 {
   imports = [
@@ -13,7 +13,7 @@ in
     ./packages.nix
     ./devShell.nix
   ];
-  options.devmods.flutter = {
+  options.devmods.modules.flutter = {
     enable = lib.mkEnableOption "Module for setting up flutter";
   };
 

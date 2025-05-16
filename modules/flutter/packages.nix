@@ -1,7 +1,7 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.flutter;
-  androidCfg = config.devmods.android;
+  cfg = config.devmods.modules.flutter;
+  androidCfg = config.devmods.modules.android;
 in
 {
   config.packages = lib.mkIf cfg.enable {
@@ -17,6 +17,8 @@ in
           # 1) Create flutter initial project files
           flutter create .
           # 2) Update versions in files
+          # TODO: double check the nsamespace devmods for `pkgs`. I dont think we can use this until
+          # we verify many other packages  can add to this samee namepsace.
           ${pkgs.sync-android-build-files}/bin/sync-android-build-files "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
 
           # 3) add local.properties to ./anddroid/ folder

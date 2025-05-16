@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.android;
+  cfg = config.devmods.modules.android;
 in
 {
   config = lib.mkIf cfg.enable {
