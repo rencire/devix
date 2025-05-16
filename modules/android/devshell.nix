@@ -25,6 +25,7 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
+    # apply java and gradle versions
     devShell =
       pkgs:
       let

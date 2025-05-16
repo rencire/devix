@@ -9,6 +9,12 @@ let
 in
 {
   imports = [
+    # Import utility functions and make them available for use as `utils` from moduleArgs
+    {
+      _module.args = {
+        dmTypes = import ./types.nix { inherit lib; };
+      };
+    }
     # TODO consider using some flakelight utils (e.g. autoload folders)
     ./modules/languages/java.nix
     ./modules/gradle/default.nix

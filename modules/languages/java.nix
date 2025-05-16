@@ -1,6 +1,8 @@
-{ config
-, lib
-, ...
+{
+  config,
+  lib,
+  dmTypes,
+  ...
 }:
 
 let
@@ -17,11 +19,13 @@ in
 
     # Option to select the Java package (JDK version)
     version = lib.mkOption {
-      type = lib.types.str;
+      type = dmTypes.version;
       default = "23";
       description = ''
         The Java package (JDK version) to use. You can specify versions that exist in nixpkgs.
         e.g. 17, 23
+        If multiple versions are specified in the configuration, because we're using `dmTypes.version`, we
+        will take the highest version of all the conflicting values.
       '';
     };
 

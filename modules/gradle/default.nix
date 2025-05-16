@@ -10,7 +10,7 @@ in
       default = "";
       description = ''
         The version of gradle to use. 
-        By default, this is empty string, which means we will use the latest version.. 
+        By default, this is empty string, which means we will use the latest version.
       '';
     };
   };
