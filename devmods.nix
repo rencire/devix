@@ -13,6 +13,7 @@ in
     {
       _module.args = {
         dmTypes = import ./types.nix { inherit lib; };
+        dmUtils = import ./utils.nix { inherit lib; };
       };
     }
     # TODO consider using some flakelight utils (e.g. autoload folders)

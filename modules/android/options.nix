@@ -2,6 +2,7 @@
   config,
   lib,
   dmTypes,
+  dmUtils,
   ...
 }:
 let
@@ -270,30 +271,6 @@ let
     };
   };
 
-  # Recursively adds "mkDefault" to all leaf nodes in attrSet, for each preset.
-  # This is so we can support nested options.
-  mkDefaultLeaves =
-    attrs:
-    lib.mapAttrs (
-      k: v:
-      # if builtins.isAttrs v then
-      # mkDefaultLeaves v
-      # else lib.mkDefault v
-
-      if builtins.isAttrs v then
-        # If the value is an attribute set, check for _value and _priority before recursing
-        if builtins.hasAttr "_value" v && builtins.hasAttr "_priority" v then
-          # If _value and _priority are present, apply mkOverride with _priority and _value
-          lib.mkOverride v._priority v._value
-        else
-          # Otherwise, recurse deeper into the attribute set
-          mkDefaultLeaves v
-      else
-        # If it's a simple value (no attribute set), apply mkDefault
-        lib.mkDefault v
-
-    ) attrs;
-
   # Partitions list below:
   # [
   #   {
@@ -342,7 +319,7 @@ let
   # \1 Returns list of preset attributes from preset names that are specified by the user
   selectedPresetSettingsList = map (key: presets.${key}) cfg.presets;
   # \2 Add mkDefault and mkOverride to the settings
-  selectedPresetsListWithMkDefaultAndOverride = map mkDefaultLeaves selectedPresetSettingsList;
+  selectedPresetsListWithMkDefaultAndOverride = map dmUtils.mkDefaultLeaves selectedPresetSettingsList;
   # \3 Partition list of presets into settings for modules
   # partitionedPresetLists = partitionPresetList selectedPresetsListWithMkDefaultAndOverride;
   # androidSettingsList = partitionedPresetLists.androidSettingsList;
