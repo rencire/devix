@@ -43,61 +43,61 @@ in
       '';
     };
 
-    android = lib.mkOption {
-      type = lib.types.submodule (import ../modules/android/default.nix);
-      default = { };
-      description = "Android-specific configuration.";
+    # android = lib.mkOption {
+    #   type = lib.types.submodule (import ../modules/android/default.nix);
+    #   default = { };
+    #   description = "Android-specific configuration.";
+    # };
+
+    android.presets = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "Override android module's `presets` options.";
     };
 
-    # android.presets = lib.mkOption {
-    #   type = lib.types.listOf lib.types.str;
-    #   default = [ ];
-    #   description = "Override android module's `presets` options.";
-    # };
-
-    # android.settings = lib.mkOption {
-    #   type = lib.types.attrs;
-    #   default = { };
-    #   description = "Override android module's `settings` options.";
-    # };
+    android.settings = lib.mkOption {
+      type = lib.types.attrs;
+      default = { };
+      description = "Override android module's `settings` options.";
+    };
 
     # Pass in java and gradle version if need to override
-    java.version = lib.mkOption {
-      type = dmTypes.version;
-      default = null;
-      description = "Override java module's `version` option.";
-    };
+    # java.version = lib.mkOption {
+    #   type = dmTypes.version;
+    #   default = null;
+    #   description = "Override java module's `version` option.";
+    # };
 
-    gradle.version = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
-      default = null;
-      description = "Override gradle module's `version` option.";
-    };
+    # gradle.version = lib.mkOption {
+    #   type = lib.types.nullOr lib.types.str;
+    #   default = null;
+    #   description = "Override gradle module's `version` option.";
+    # };
   };
 
   config = lib.mkIf cfg.enable {
     devmods.modules = lib.mkMerge (
-      # Merge in settings from presets defined for this "android profile"
-      selectedPresetsListWithMkDefaultAndOverride
-      ++ [
-        # Pass in overrides for other options not set by presets
+      #     # Merge in settings from presets defined for this "android profile"
+      #     selectedPresetsListWithMkDefaultAndOverride
+      #     ++
+      [
+        #       # Pass in overrides for other options not set by presets
         {
           gradle = {
             enable = true;
-            version = lib.optionalAttrs (lib.hasAttrByPath [ "gradle" "version" ] cfg) cfg.gradle.version;
+            #         #   version = lib.optionalAttrs (lib.hasAttrByPath [ "gradle" "version" ] cfg) cfg.gradle.version;
           };
-          languages.java = {
-            enable = true;
-            version = lib.optionalAttrs (lib.hasAttrByPath [ "java" "version" ] cfg) cfg.java.version;
-          };
+          #         # languages.java = {
+          #         #   enable = true;
+          #         #   version = lib.optionalAttrs (lib.hasAttrByPath [ "java" "version" ] cfg) cfg.java.version;
+          #         # };
           android = {
             enable = true;
-            # TODO why does this line below feetch latest android sdk? is it not being overridden by the preset "android-api-34"?
-            # presets = lib.optionalAttrs (lib.hasAttrByPath [ "android" "presets" ] cfg) cfg.android.presets;
-            # settings = lib.optionalAttrs (lib.hasAttrByPath [ "android" "settings" ] cfg) cfg.android.settings;
+            #         # TODO why does this line below feetch latest android sdk? is it not being overridden by the preset "android-api-34"?
+            presets = lib.optionalAttrs (lib.hasAttrByPath [ "android" "presets" ] cfg) cfg.android.presets;
+            settings = lib.optionalAttrs (lib.hasAttrByPath [ "android" "settings" ] cfg) cfg.android.settings;
           };
         }
-      ]
-    );
+      ]);
   };
 }

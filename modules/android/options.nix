@@ -259,7 +259,34 @@ let
       #   version = "17";
       # };
     };
+    # TODO its not being passed here.
     "test" = {
+      platform.compileSdkVersion = {
+        _value = "34";
+        _priority = 50;
+      };
+      platform.versions = {
+        _value = [ "34" ];
+        _priority = 50;
+      };
+      androidGradlePlugin.version = {
+        _value = "8.6.0";
+        _priority = 50;
+      };
+      buildTools.versions = {
+        _value = [ "34.0.0" ];
+        _priority = 50;
+      };
+      cmake.versions = {
+        _value = [ "3.22.1" ];
+        _priority = 50;
+      };
+      ndk.versions = {
+        _value = [
+          "26.3.11579264"
+        ];
+        _priority = 50;
+      };
       # platform.compileSdkVersion = "35";
       # languages.java = {
       #   enable = true;

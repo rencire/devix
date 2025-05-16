@@ -72,6 +72,7 @@ in
           in
           ''
             set -e
+            echo "hi"
 
             # tools is deprecated? I think it's replaced by command-line-tools? Add it here anyway
             export PATH="$PATH:$ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools"
