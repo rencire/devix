@@ -240,34 +240,28 @@ let
 
   presets = {
     "api-34" = {
-      android.settings = {
-        platform.compileSdkVersion = "34";
-        platform.versions = [ "34" ];
-        androidGradlePlugin.version = "8.6.0";
-        buildTools.versions = [ "34.0.0" ];
-        cmake.versions = [ "3.22.1" ];
-        ndk.versions = [
-          "26.3.11579264"
-        ];
-      };
-      # TODO
-      # This value should override devmods.gradle.version
-      # Note: do we want to maybe move this "preset" into a different module, like an "integrations" module?
+      platform.compileSdkVersion = "34";
+      platform.versions = [ "34" ];
+      androidGradlePlugin.version = "8.6.0";
+      buildTools.versions = [ "34.0.0" ];
+      cmake.versions = [ "3.22.1" ];
+      ndk.versions = [
+        "26.3.11579264"
+      ];
+      # NOTE: do we want to maybe move this "preset" into a different module, like an "integrations" module?
       # gradleVersion = "8.8";
-      # TODO
-      # This value should override devmods.languages.java.version
-      # Note: do we want to maybe move this "preset" into a different module, like an "integrations" module?
-      languages.java = {
-        enable = true;
-        version = "17";
-      };
+      # NOTE: do we want to maybe move this "preset" into a different module, like an "integrations" module?
+      # languages.java = {
+      #   enable = true;
+      #   version = "17";
+      # };
     };
     "test" = {
-      platform.compileSdkVersion = "35";
-      languages.java = {
-        enable = true;
-        version = "23";
-      };
+      # platform.compileSdkVersion = "35";
+      # languages.java = {
+      #   enable = true;
+      #   version = "23";
+      # };
       # Example of using _value and _priority if need mkOverride
       # languages.java.version = {
       #   _value = "23";
@@ -299,6 +293,7 @@ let
         lib.mkDefault v
 
     ) attrs;
+
   # Partitions list below:
   # [
   #   {
@@ -327,37 +322,39 @@ let
   # into two lists:
   # 1. [ {abis=[...];...} {abis=[...]; ...} ...]
   # 2. [ {version = 9; ...} {version = 10;... } ]
-  partitionPresetList =
-    presets:
-    lib.foldl'
-      (acc: preset: {
-        androidSettingsList =
-          acc.androidSettingsList
-          ++ (if lib.hasAttrByPath [ "android" "settings" ] preset then [ preset.android.settings ] else [ ]);
-        languagesJavaList =
-          acc.languagesJavaList
-          ++ (if lib.hasAttrByPath [ "languages" "java" ] preset then [ preset.languages.java ] else [ ]);
-      })
-      {
-        androidSettingsList = [ ];
-        languagesJavaList = [ ];
-      }
-      presets;
+  # partitionPresetList =
+  #   presets:
+  #   lib.foldl'
+  #     (acc: preset: {
+  #       androidSettingsList =
+  #         acc.androidSettingsList
+  #         ++ (if lib.hasAttrByPath [ "android" "settings" ] preset then [ preset.android.settings ] else [ ]);
+  #       languagesJavaList =
+  #         acc.languagesJavaList
+  #         ++ (if lib.hasAttrByPath [ "languages" "java" ] preset then [ preset.languages.java ] else [ ]);
+  #     })
+  #     {
+  #       androidSettingsList = [ ];
+  #       languagesJavaList = [ ];
+  #     }
+  #     presets;
 
   # \1 Returns list of preset attributes from preset names that are specified by the user
   selectedPresetSettingsList = map (key: presets.${key}) cfg.presets;
   # \2 Add mkDefault and mkOverride to the settings
   selectedPresetsListWithMkDefaultAndOverride = map mkDefaultLeaves selectedPresetSettingsList;
   # \3 Partition list of presets into settings for modules
-  partitionedPresetLists = partitionPresetList selectedPresetsListWithMkDefaultAndOverride;
-  androidSettingsList = partitionedPresetLists.androidSettingsList;
-  languagesJavaList = partitionedPresetLists.languagesJavaList;
+  # partitionedPresetLists = partitionPresetList selectedPresetsListWithMkDefaultAndOverride;
+  # androidSettingsList = partitionedPresetLists.androidSettingsList;
+  # languagesJavaList = partitionedPresetLists.languagesJavaList;
 in
 {
   options.devmods.android = options;
   # \4 Apply settings
-  config.devmods.android.settings = lib.mkMerge androidSettingsList;
-  config.devmods.languages.java = lib.mkMerge languagesJavaList;
+  # config.devmods.android.settings = lib.mkMerge androidSettingsList;
+  # config.devmods.languages.java = lib.mkMerge languagesJavaList;
+
+  config.devmods.android.settings = lib.mkMerge selectedPresetsListWithMkDefaultAndOverride;
 
   # config.devmods.android.settings = lib.mkMerge (
   # selectedPresetSettingsWithMkDefault.android.settings
