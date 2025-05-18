@@ -1,26 +1,25 @@
 { config, lib, ... }:
 let
   cfg = config.devmods.modules.android;
-  cfgSettings = cfg.settings;
 
   sdkArgs = {
     # TODO add getScalar or getList from above w/ default value
-    cmdLineToolsVersion = cfgSettings.cmdLineTools.version;
-    platformVersions = cfgSettings.platform.versions;
-    platformToolsVersion = cfgSettings.platformTools.version;
-    buildToolsVersions = cfgSettings.buildTools.versions;
-    includeEmulator = cfgSettings.emulator.enable;
-    emulatorVersion = cfgSettings.emulator.version;
-    includeSystemImages = cfgSettings.systemImages.enable;
-    systemImageTypes = cfgSettings.systemImageTypes;
-    abiVersions = cfgSettings.abis;
-    cmakeVersions = cfgSettings.cmake.versions;
-    includeNDK = cfgSettings.ndk.enable;
-    ndkVersions = cfgSettings.ndk.versions;
-    useGoogleAPIs = cfgSettings.googleAPIs.enable;
-    includeSources = cfgSettings.sources.enable;
-    includeExtras = cfgSettings.extras;
-    extraLicenses = cfgSettings.extraLicenses;
+    cmdLineToolsVersion = cfg.cmdLineTools.version;
+    platformVersions = cfg.platform.versions;
+    platformToolsVersion = cfg.platformTools.version;
+    buildToolsVersions = cfg.buildTools.versions;
+    includeEmulator = cfg.emulator.enable;
+    emulatorVersion = cfg.emulator.version;
+    includeSystemImages = cfg.systemImages.enable;
+    systemImageTypes = cfg.systemImageTypes;
+    abiVersions = cfg.abis;
+    cmakeVersions = cfg.cmake.versions;
+    includeNDK = cfg.ndk.enable;
+    ndkVersions = cfg.ndk.versions;
+    useGoogleAPIs = cfg.googleAPIs.enable;
+    includeSources = cfg.sources.enable;
+    includeExtras = cfg.extras;
+    extraLicenses = cfg.extraLicenses;
   };
 in
 {
@@ -51,15 +50,15 @@ in
           # maxVersion = builtins.foldl' (acc: v:
           # if lib.compareVersions v acc == 1 then v else acc
           # ) (builtins.head versions) (builtins.tail versions);
-          GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/${lib.head cfgSettings.buildTools.versions}/aapt2";
+          GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/${lib.head cfg.buildTools.versions}/aapt2";
           # emulator related: vulkan-loader and libGL shared libs are necessary for hardware decoding
           LD_LIBRARY_PATH = "${
             lib.makeLibraryPath [
               vulkan-loader
               libGL
             ]
-          }:${ANDROID_HOME}/build-tools/${lib.head cfgSettings.buildTools.versions}/lib64/
-           :${ANDROID_NDK_ROOT}/${lib.head cfgSettings.ndk.versions}/toolchains/llvm/prebuilt/${os}-x86_64/lib/
+          }:${ANDROID_HOME}/build-tools/${lib.head cfg.buildTools.versions}/lib64/
+           :${ANDROID_NDK_ROOT}/${lib.head cfg.ndk.versions}/toolchains/llvm/prebuilt/${os}-x86_64/lib/
           :$LD_LIBRARY_PATH";
           # For now, it seems only x86_64 is available for prebuilt llvm libraries
           # TODO: fix bug where ndk.versions is an empty list
@@ -72,7 +71,6 @@ in
           in
           ''
             set -e
-            echo "hi"
 
             # tools is deprecated? I think it's replaced by command-line-tools? Add it here anyway
             export PATH="$PATH:$ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools"
@@ -95,7 +93,7 @@ in
             test -e "$ANDROID_AVD_HOME" || mkdir -p "$ANDROID_AVD_HOME"
 
             # Sync build files
-            ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${cfgSettings.platform.compileSdkVersion}" "${cfgSettings.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
+            ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${cfg.platform.compileSdkVersion}" "${cfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
             set +e
           '';
 
