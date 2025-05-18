@@ -43,13 +43,13 @@ in
   # ];
   options.devmods.profiles.android-dev-env = {
     enable = lib.mkEnableOption "Enable the Android development environment";
-    # presets = lib.mkOption {
-    #   type = lib.types.listOf lib.types.str;
-    #   default = [ ];
-    #   description = ''
-    #     List of presets for determining values of options for the android profile.
-    #   '';
-    # };
+    presets = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = null;
+      description = ''
+        List of presets for determining values of options for the android profile.
+      '';
+    };
 
     # android = lib.mkOption {
     #   type = lib.types.submodule (import ../modules/android/default.nix);

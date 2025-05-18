@@ -6,7 +6,9 @@ in
   config.devShell = lib.mkIf cfg.enable (
     pkgs:
     let
-      jdkPackage = pkgs."jdk${config.devmods.modules.languages.java.version}";
+      # jdkPackage = pkgs."jdk${config.devmods.modules.languages.java.version}";
+
+      # Use `dm-jdk` from config.devmods.modules.languages.java
 
       # We need to modify this because flutter annoyingly checks for jdk on
       # installed Anddroid studio first, before considering JAVA_HOME.  So typical method
@@ -18,7 +20,7 @@ in
         name = "flutter-settings.json";
         text = ''
           {
-            "jdk-dir": "${jdkPackage.home}"
+            "jdk-dir": "${pkgs.dm-jdk.home}"
           }
         '';
       };

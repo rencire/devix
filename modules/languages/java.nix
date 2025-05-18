@@ -42,21 +42,21 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # packages = {
-    # jdk = pkgs: pkgs."jdk${cfg.version}";
-    # };
-    devShell =
-      pkgs:
-      let
-        jdkPackage = if cfg.version == null then pkgs.jdk else pkgs."jdk${cfg.version}";
-      in
-      {
-        packages = [
-          jdkPackage
-        ];
-        env = {
-          JAVA_HOME = "${jdkPackage.home}";
-        };
+    packages = {
+      dm-jdk =
+        pkgs:
+        let
+          jdkPackage = if cfg.version == null then pkgs.jdk else pkgs."jdk${cfg.version}";
+        in
+        jdkPackage;
+    };
+    devShell = pkgs: {
+      packages = [
+        pkgs.dm-jdk
+      ];
+      env = {
+        JAVA_HOME = "${pkgs.dm-jdk.home}";
       };
+    };
   };
 }
