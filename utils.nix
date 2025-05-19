@@ -98,9 +98,12 @@ rec {
       lib.mapAttrs (_: v: if lib.isAttrs v then removeNullsAndEmptySets v else v) attrs
     );
 
-  makeNullableOptions =
+  # Takes in an typical options set from a module, and creates a duplicate
+  # of the options, with addition of making it nullable.
+  makeNullableOptionsRecursive =
     opts:
     let
+      isOption = v: lib.isAttrs v && (v._type or null) == "option";
       isNullableType = type: type.name == "nullOr";
 
       makeNullableOption =
@@ -114,7 +117,15 @@ rec {
           default = null;
         };
     in
-    lib.mapAttrs (_name: makeNullableOption) opts;
+    lib.mapAttrs (
+      _name: val:
+      if isOption val then
+        makeNullableOption val
+      else if lib.isAttrs val then
+        makeNullableOptionsRecursive val
+      else
+        val
+    ) opts;
 
   # # Recursively adds "mkDefault" to all leaf nodes in attrSet, for each preset.
   # # This is so we can support nested options.

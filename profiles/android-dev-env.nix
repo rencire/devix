@@ -31,9 +31,9 @@ let
       languages.java = {
         version = "17";
       };
-      # gradle = {
-      #   version = "8.8";
-      # };
+      gradle = {
+        version = "8.8";
+      };
       # android = {
       #   enable = true;
       #   platform.compileSdkVersion = "from preset 3";
@@ -114,10 +114,11 @@ in
     overrideModules = {
       # TODO add null to the options
       # android = import ../modules/android/options.nix { inherit lib dmTypes; };
+      # android = dmUtils.makeNullableOptionsRecursive options.devmods.modules.android;
       # TODO test below code. if it works, replace above with it
       # android = import options.devmods.modules.android;
-      languages.java = dmUtils.makeNullableOptions options.devmods.modules.languages.java;
-      # gradle.version = options.devmods.modules.gradle.version;
+      languages.java = dmUtils.makeNullableOptionsRecursive options.devmods.modules.languages.java;
+      gradle = dmUtils.makeNullableOptionsRecursive options.devmods.modules.gradle;
     };
 
   };
