@@ -10,14 +10,11 @@
 
     # Option to select the Java package (JDK version)
     version = lib.mkOption {
-      # type = lib.types.nullOr dmTypes.version;
       type = lib.types.nullOr lib.types.str;
       default = null;
       description = ''
         The Java package (JDK version) to use. You can specify versions that exist in nixpkgs.
         e.g. 17, 21, 23
-        If multiple versions are specified in the configuration, because we're using `dmTypes.version`, we
-        will take the highest version of all the conflicting values.
         If no value is specified, we will take the default `jdk` package from nixpkgs.
         If value is an empty string, behavior is undefined.
       '';

@@ -3,7 +3,7 @@
   config,
   options,
   lib,
-  dmUtils,
+  devix,
   ...
 }:
 let
@@ -20,7 +20,7 @@ let
   consumerCfgPriority = 80;
 
   # Base module settings we want enabled, wheneve this profile is enabled
-  basePreset = dmUtils.mkPreset 90 {
+  basePreset = devix.utils.mkPreset 90 {
     android.enable = true;
     gradle.enable = true;
     languages.java.enable = true;
@@ -33,7 +33,7 @@ let
   # - We can optionally modify the priority for each specific individual value also.
   #    (See: utils.nix#mkPreset)
   presets = {
-    "android-api-34" = dmUtils.mkPreset 100 {
+    "android-api-34" = devix.utils.mkPreset 100 {
       languages.java = {
         version = "17";
       };
@@ -59,8 +59,8 @@ let
   # - Remove nulls from overrideMOdules config, so that we don't override modules with null
   # - If a value is null or empty, it means the consumer did not set an override. Hence, we
   #   do not need to use the null or empty value to override the modules.
-  overrideModulesCfgWithoutNulls = dmUtils.removeNullsAndEmptySets cfg.overrideModules;
-  overrideModulesCfgWithPriorities = dmUtils.mkPreset consumerCfgPriority overrideModulesCfgWithoutNulls;
+  overrideModulesCfgWithoutNulls = devix.utils.removeNullsAndEmptySets cfg.overrideModules;
+  overrideModulesCfgWithPriorities = devix.utils.mkPreset consumerCfgPriority overrideModulesCfgWithoutNulls;
 in
 {
   options.devmods.profiles.android-dev-env = {
@@ -78,9 +78,9 @@ in
     # This allows us to determine wheether an override value was specified or not
     # by the consumer.
     overrideModules = {
-      android = dmUtils.makeNullableOptionsRecursive options.devmods.modules.android;
-      languages.java = dmUtils.makeNullableOptionsRecursive options.devmods.modules.languages.java;
-      gradle = dmUtils.makeNullableOptionsRecursive options.devmods.modules.gradle;
+      android = devix.utils.makeNullableOptionsRecursive options.devmods.modules.android;
+      languages.java = devix.utils.makeNullableOptionsRecursive options.devmods.modules.languages.java;
+      gradle = devix.utils.makeNullableOptionsRecursive options.devmods.modules.gradle;
     };
   };
 

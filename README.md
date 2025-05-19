@@ -131,3 +131,10 @@ module.
   - [flakelight](https://github.com/nix-community/flakelight)
 - Similar projects/inspiratino:
   - [devenv](https://github.com/cachix/devenv)
+
+
+
+
+# TODO
+- [] Remove high "devmods" namespace? Maybe use only "devmods" and "devprofiles" as top-level attributes:
+  - Maybe rename project to "devo", or "flaked", or "devflake"?

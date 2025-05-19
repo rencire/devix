@@ -12,8 +12,10 @@ in
     # Import utility functions and make them available for use as `utils` from moduleArgs
     {
       _module.args = {
-        dmTypes = import ./types.nix { inherit lib; };
-        dmUtils = import ./utils.nix { inherit lib; };
+        devix = {
+          types = import ./types.nix { inherit lib; };
+          utils = import ./utils.nix { inherit lib; };
+        };
       };
     }
     # TODO consider using some flakelight utils (e.g. autoload folders)
