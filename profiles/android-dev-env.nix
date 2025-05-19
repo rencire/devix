@@ -12,10 +12,16 @@ let
   # Static value we set for override configuration so that
   # values can be overwritten.  Lower is higher priority, hence why
   # override values can "override" the preset values defined below.
-  consumerCfgPriority = 90;
+  #
+  # Notes:
+  # - We start setting the preset override values at the minimum
+  #   override level (i.e. 100).  This is to ensure that priority
+  #   for the preset values are higher than the null priority value (default to 1000).
+  #   - For details on the null override priority level, see `mkPreset`
+  consumerCfgPriority = 80;
   # Base module settings we want enabled, wheneve this profile is enabled
-  basePreset = dmUtils.mkPreset 100 {
-    android.enable = true;
+  basePreset = dmUtils.mkPreset 90 {
+    # android.enable = true;
     gradle.enable = true;
     languages.java.enable = true;
   };
@@ -28,32 +34,28 @@ let
       # gradle = {
       #   version = "8.8";
       # };
-      #   android = {
-      #     enable = true;
-      #     platform.compileSdkVersion = "from preset 3";
-      #     platform.versions = [ "34" ];
-      #     androidGradlePlugin.version = "8.6.0";
-      #     buildTools.versions = [ "34.0.0" ];
-      #     cmake.versions = [ "3.22.1" ];
-      #     ndk.versions = [
-      #       "26.3.11579264"
-      #     ];
-      #     # Set android option to true for this profile.
-      #     # TODO Why do we need to set this? shouldn't we have mkDefault already?
-      #     # Do we need to set priority for the other values as well? and also in modules.android?
-      #   };
+      # android = {
+      #   enable = true;
+      #   platform.compileSdkVersion = "from preset 3";
+      #   platform.versions = [ "34" ];
+      #   androidGradlePlugin.version = "8.6.0";
+      #   buildTools.versions = [ "34.0.0" ];
+      #   cmake.versions = [ "3.22.1" ];
+      #   ndk.versions = [
+      #     "26.3.11579264"
+      #   ];
+      # };
     };
   };
 
   selectedPresetsList = map (key: presets.${key}) cfg.presets;
-  # # \2 Add mkDefault and mkOverride to the settings
-
-  # Note: this likely doesn't recursively update with mkMerge?
-  # selectedPresetsListWithMkDefaultAndOverride = map dmUtils.mkDefaultLeaves selectedPresetSettingsList;
-
   # cfg that is intended to be set with values from other modules (i.e. end-user values)
-  # This shou
-  overrideModulesCfg = dmUtils.mkPreset consumerCfgPriority cfg.overrideModules;
+  #
+  #
+  # 1. Remove nulls from overrideMOdules config
+  overrideModulesCfgWithoutNulls = dmUtils.removeNullsAndEmptySets cfg.overrideModules;
+  overrideModulesCfgWithPriorities = dmUtils.mkPreset consumerCfgPriority overrideModulesCfgWithoutNulls;
+  # overrideModulesCfg = dmUtils.mkPreset consumerCfgPriority cfg.overrideModules;
 in
 {
   # Re-use the option definitions from "modules.android"
@@ -110,10 +112,11 @@ in
     # };
     # };
     overrideModules = {
-      android = import ../modules/android/options.nix { inherit lib dmTypes; };
+      # TODO add null to the options
+      # android = import ../modules/android/options.nix { inherit lib dmTypes; };
       # TODO test below code. if it works, replace above with it
       # android = import options.devmods.modules.android;
-      languages.java.version = options.devmods.modules.languages.java.version;
+      languages.java = dmUtils.makeNullableOptions options.devmods.modules.languages.java;
       # gradle.version = options.devmods.modules.gradle.version;
     };
 
@@ -151,7 +154,13 @@ in
         # Add base preset option values
         basePreset
         # Add overrides
-        overrideModulesCfg
+        # overrideModulesCfg
+        overrideModulesCfgWithPriorities
+        # {
+        #   android = {
+        #     platform.compileSdkVersion = "from override 4";
+        #   };
+        # }
 
         # {
         #   # gradle = {
@@ -196,17 +205,17 @@ in
         #       );
 
         # }
-        {
-          android = (lib.attrByPath [ "android" ] { } cfg);
-          # android = {
-          #   platform.compileSdkVersion = "from manual override";
-          # };
-          # Always enable android since this android-dev-env profile is enabled
-          # No need for `lib.recursiveUpdate`, since we are not merging nested attributes
-          # android = (lib.attrByPath [ "android" ] { } cfg) // {
-          #   enable = true;
-          # };
-        }
+        # {
+        #   android = (lib.attrByPath [ "android" ] { } cfg);
+        #   # android = {
+        #   #   platform.compileSdkVersion = "from manual override";
+        #   # };
+        #   # Always enable android since this android-dev-env profile is enabled
+        #   # No need for `lib.recursiveUpdate`, since we are not merging nested attributes
+        #   # android = (lib.attrByPath [ "android" ] { } cfg) // {
+        #   #   enable = true;
+        #   # };
+        # }
 
         # { android.platform.compileSdkVersion = lib.mkOverride 10 cfg.android.platform.compileSdkVersion; }
         # { android.platform.compileSdkVersion = lib.mkForce "manual update"; }

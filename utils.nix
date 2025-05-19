@@ -72,7 +72,49 @@ rec {
 
   # Note:
   # Set null to relatively low priority of 1000 (same as mkDefault)
-  mkPreset = priority: cfg: addOverrides 1000 priority cfg;
+  mkPresetWithNulls = priority: cfg: addOverrides 1000 priority cfg;
+
+  # Inteneded to ttake in cfg that doesn't have nulls.
+  mkPreset =
+    priority: cfg:
+    lib.mapAttrs (
+      k: v:
+      if builtins.isAttrs v then
+        # If the value is an attribute set, check for _value and _priority before recursing
+        if builtins.hasAttr "_value" v && builtins.hasAttr "_priority" v then
+          # If _value and _priority are present, apply mkOverride with _priority and _value.
+          lib.mkOverride v._priority v._value
+        else
+          # Otherwise, recurse deeper into the attribute set
+          mkPreset priority v
+      else
+        lib.mkOverride priority v
+
+    ) cfg;
+
+  removeNullsAndEmptySets =
+    attrs:
+    lib.filterAttrs (_: v: v != null && (!lib.isAttrs v || v != { })) (
+      lib.mapAttrs (_: v: if lib.isAttrs v then removeNullsAndEmptySets v else v) attrs
+    );
+
+  makeNullableOptions =
+    opts:
+    let
+      isNullableType = type: type.name == "nullOr";
+
+      makeNullableOption =
+        opt:
+        let
+          newType = if isNullableType opt.type then opt.type else lib.types.nullOr opt.type;
+        in
+        opt
+        // {
+          type = newType;
+          default = null;
+        };
+    in
+    lib.mapAttrs (_name: makeNullableOption) opts;
 
   # # Recursively adds "mkDefault" to all leaf nodes in attrSet, for each preset.
   # # This is so we can support nested options.
