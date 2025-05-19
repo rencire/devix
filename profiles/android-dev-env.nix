@@ -7,7 +7,7 @@
   ...
 }:
 let
-  cfg = config.devmods.profiles.android-dev-env;
+  cfg = config.devProfiles.android-dev-env;
   # Static value we set for override configuration so that
   # values can be overwritten.  Lower is higher priority, hence why
   # override values can "override" the preset values defined below.
@@ -63,7 +63,7 @@ let
   overrideModulesCfgWithPriorities = devix.utils.mkPreset consumerCfgPriority overrideModulesCfgWithoutNulls;
 in
 {
-  options.devmods.profiles.android-dev-env = {
+  options.devProfiles.android-dev-env = {
     enable = lib.mkEnableOption "Enable the Android development environment";
     presets = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -78,14 +78,14 @@ in
     # This allows us to determine wheether an override value was specified or not
     # by the consumer.
     overrideModules = {
-      android = devix.utils.makeNullableOptionsRecursive options.devmods.modules.android;
-      languages.java = devix.utils.makeNullableOptionsRecursive options.devmods.modules.languages.java;
-      gradle = devix.utils.makeNullableOptionsRecursive options.devmods.modules.gradle;
+      android = devix.utils.makeNullableOptionsRecursive options.devModules.android;
+      languages.java = devix.utils.makeNullableOptionsRecursive options.devModules.languages.java;
+      gradle = devix.utils.makeNullableOptionsRecursive options.devModules.gradle;
     };
   };
 
   config = lib.mkIf cfg.enable {
-    devmods.modules = lib.mkMerge (
+    devModules = lib.mkMerge (
       # Override module option values from presets
       selectedPresetsList
       ++ [

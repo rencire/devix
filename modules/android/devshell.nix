@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.modules.android;
+  cfg = config.devModules.android;
 
   sdkArgs = {
     # TODO add getScalar or getList from above w/ default value
@@ -67,7 +67,7 @@ in
         shellHook =
           # TODO move this shellHook to profiles.android
           let
-            androidDir = if config.devmods.modules.flutter.enable then "./android/" else ".";
+            androidDir = if config.devModules.flutter.enable then "./android/" else ".";
           in
           ''
             set -e
@@ -93,7 +93,7 @@ in
             test -e "$ANDROID_AVD_HOME" || mkdir -p "$ANDROID_AVD_HOME"
 
             # Sync build files
-            ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${cfg.platform.compileSdkVersion}" "${cfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
+            ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${cfg.platform.compileSdkVersion}" "${cfg.androidGradlePlugin.version}" "${pkgs.devModules.gradle-wrapper}"
             set +e
           '';
 

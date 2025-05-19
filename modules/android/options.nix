@@ -4,7 +4,7 @@
   ...
 }:
 {
-  options.devmods.modules.android = {
+  options.devModules.android = {
 
     enable = lib.mkEnableOption "Enable dependencies for Android tools";
 
@@ -15,7 +15,7 @@
         The version of android gradle plugin to use. This is used
         to update the version in `settings.gradle.kts` file.
         By default, this is empty string, which means we will not update the
-        version in `settings.gradle.kts`. 
+        version in `settings.gradle.kts`.
       '';
     };
 
@@ -27,7 +27,7 @@
         to update the version in `app/build.gradle.kts` file.
         If multiple values are specified, we will take the highest version.
         By default, this is empty string, which means we will not update the
-        version in `app/build.gradle.kts`. 
+        version in `app/build.gradle.kts`.
       '';
     };
 

@@ -1,9 +1,9 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.modules.flutter;
-  # TODO consider setting `androidCfg.compileSdk.version` and `pkgs.devmods.gradle-wrapper`
+  cfg = config.devModules.flutter;
+  # TODO consider setting `androidCfg.compileSdk.version` and `pkgs.devModules.gradle-wrapper`
   # as options available to this module, so that this module is more encapsulated.
-  androidCfg = config.devmods.modules.android;
+  androidCfg = config.devModules.android;
 in
 {
   config.packages = lib.mkIf cfg.enable {
@@ -19,9 +19,9 @@ in
           # 1) Create flutter initial project files
           flutter create .
           # 2) Update versions in files
-          # TODO: double check the nsamespace devmods for `pkgs`. I dont think we can use this until
+          # TODO: double check the nsamespace devModules for `pkgs`. I dont think we can use this until
           # we verify many other packages  can add to this samee namepsace.
-          ${pkgs.sync-android-build-files}/bin/sync-android-build-files "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}" "${pkgs.devmods.gradle-wrapper}"
+          ${pkgs.sync-android-build-files}/bin/sync-android-build-files "./android" "${androidCfg.compileSdk.version}" "${androidCfg.androidGradlePlugin.version}" "${pkgs.devModules.gradle-wrapper}"
 
           # 3) add local.properties to ./anddroid/ folder
           # TODO consder referencing the nix packages instead of shell env vars

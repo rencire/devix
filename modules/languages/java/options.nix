@@ -1,6 +1,6 @@
 { lib, ... }:
 {
-  options.devmods.modules.languages.java = {
+  options.devModules.languages.java = {
     # Option to enable or disable Java package
     enable = lib.mkOption {
       type = lib.types.bool;

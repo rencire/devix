@@ -1,15 +1,15 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.modules.gradle;
+  cfg = config.devModules.gradle;
 in
 {
-  options.devmods.modules.gradle = {
+  options.devModules.gradle = {
     enable = lib.mkEnableOption "Gradle devModule";
     version = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
       description = ''
-        The version of gradle to use. 
+        The version of gradle to use.
         By default, this is empty string, which means we will use the latest version.
       '';
     };
@@ -17,10 +17,10 @@ in
 
   config = lib.mkIf cfg.enable {
     packages = {
-      # Use our `devmods` namespace under `packages`
-      # TODO change, this, can't use `devmods` for other modules, since it conflicts. probably need to
+      # Use our `devModules` namespace under `packages`
+      # TODO change, this, can't use `devModules` for other modules, since it conflicts. probably need to
       # resort to another method for namespace, or forego it alltogether.
-      devmods =
+      devModules =
         pkgs:
         if cfg.version == null then
           {
@@ -38,7 +38,7 @@ in
             devmod-gradle = pkgs.wrapGradle gradle-unwrapped null;
           in
           {
-            # add our own devmod gradle under`devmods.gradle`
+            # add our own devmod gradle under`devModules.gradle`
             gradle = devmod-gradle;
             gradle-wrapper = pkgs.writeShellScript "gradle-wrapper" ''
               # We're using the `gradle` we just defined above.
@@ -49,10 +49,10 @@ in
     devShell =
       pkgs: with pkgs; {
         packages = [
-          devmods.gradle
+          devModules.gradle
         ];
         env = {
-          GRADLE_HOME = "${devmods.gradle}";
+          GRADLE_HOME = "${devModules.gradle}";
         };
       };
   };

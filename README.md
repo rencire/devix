@@ -1,7 +1,8 @@
 # About
 
-Devmods is a project created to easily setup and configure your develoepr environment.
-This is done through configuring modules in a nix flake file.
+Devix is a project created to easily setup and configure your develoepr environment.
+This is done through configuring "devProfiles" and "devModules" in a nix flake file.
+
 
 # Getting Started
 
@@ -10,7 +11,7 @@ This is done through configuring modules in a nix flake file.
 1.Create a new project nix template...
 
 ```
-nix flake new -t github:rencire/devmods/main <your_project>
+nix flake new -t github:rencire/devix/main <your_project>
 
 ```
 
@@ -18,7 +19,7 @@ or initialize exsting project with template in your project directory:
 
 ```
 cd <your_project>
-nix flake init github:rencire/devmods/main
+nix flake init github:rencire/devix/main
 ```
 
 2. Go to <your_project> and allow direnv to autoload your shell
@@ -39,19 +40,19 @@ Here's an example creating a developer environment with android module:
 
 ```nix
 {
-  inputs.devmods.url = "github:rencire/devmods";
-  outputs = { devmods, ... }: devmods ./. {
-    # Developer Modules available under `devmods`.
+  inputs.devix.url = "github:rencire/devix";
+  outputs = { devix, ... }: devix ./. {
+    # Developer profiles available under `devProfiles`.
     inherit inputs;
     systems = [
       # Add systems for your machine here
       "aarch64-darwin"
     ];
-    # This is main attribute set where we define our module settings
-    devmods = {
-      android = {
+    # This is main attribute set where we define our developer environment settings
+    devProfiles = {
+      android-dev-env = {
         enable = true;
-        # See android module for available options
+        # See  module/android for available options
         platform.versions = [ "34" ];
         abis = [
           "arm64-v8a"
@@ -65,45 +66,48 @@ Here's an example creating a developer environment with android module:
 
 
 Alternatively, if you're already using [`flakelight`](https://github.com/nix-community/flakelight), you can
-add `devmods` as a `flakelight` module.
+add `devix` as a `flakelight` module.
 This is useful if you also have other flakelight modules to import:
 
 ```nix
 {
   inputs = {
     flakelight.url = "github:nix-community/flakelight";
-    devmods.url = "github:rencire/devmods";
+    devix.url = "github:rencire/devix";
   };
   outputs = { flakelight, flakelight-rust, ... }: flakelight ./. {
     imports = [
-      devmods.flakelightModules.default
+      devix.flakelightModules.default
       # Add other flakelight modules here
     ];
-    devmods = {
-       # Devmod settings here
+    devProfiles = {
+       # Devix profile settings here
     };
     # Rest of nix flake configuration goes here...
   };
 }
 ```
 
-Other than `devmods`, you can add other standard`flakelight`/`nix flake` attributes as well.
+Other than `devProfiles` and `devModules`, you can add other standard`flakelight`/`nix flake` attributes as well.
 
 Here's an example with `devShell`:
 
 ```nix
 {
-  inputs.devmods.url = "github:rencire/devmods";
-  outputs = { devmods, ... }: devmods ./. {
-    # Developer Modules available under `devmods`.
+  inputs.devix.url = "github:rencire/devix";
+  outputs = { devix, ... }: devix ./. {
+    # Developer profiles and modules available under `devProfiles` and `devModules`.
     inherit inputs;
     systems = [
       # Add systems for your machine here
       "aarch64-darwin"
     ];
     # This is main attribute set where we define our module settings
-    devmods = {
-    # Devmod settings here
+    devProfiles = {
+    # Dev profile settings here. Most likely would use this over `devModules`
+    };
+    devModules = {
+    # Dev module settings here. 
     };
     # Can add other nix flake outputs attributes here.  
     devShell = pkgs: {
@@ -118,7 +122,7 @@ Here's an example with `devShell`:
   };
 }
 ```
-Note: These attributes tend to accept a function with `pkgs` available, since `devmods` itself is a [`flakelight`](https://github.com/nix-community/flakelight)
+Note: These attributes tend to accept a function with `pkgs` available, since `devix` itself is a [`flakelight`](https://github.com/nix-community/flakelight)
 module.
 - See: https://github.com/nix-community/flakelight/blob/master/API_GUIDE.md
 

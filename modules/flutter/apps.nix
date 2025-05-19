@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.modules.flutter;
+  cfg = config.devModules.flutter;
 in
 {
   config.apps = lib.mkIf cfg.enable {

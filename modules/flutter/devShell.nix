@@ -1,14 +1,14 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.modules.flutter;
+  cfg = config.devModules.flutter;
 in
 {
   config.devShell = lib.mkIf cfg.enable (
     pkgs:
     let
-      # jdkPackage = pkgs."jdk${config.devmods.modules.languages.java.version}";
+      # jdkPackage = pkgs."jdk${config.devModules.languages.java.version}";
 
-      # Use `dm-jdk` from config.devmods.modules.languages.java
+      # Use `dm-jdk` from config.devModules.languages.java
 
       # We need to modify this because flutter annoyingly checks for jdk on
       # installed Anddroid studio first, before considering JAVA_HOME.  So typical method
@@ -64,9 +64,9 @@ in
 
       shellHook = ''
         # 1) Create a symlink to the settings file in the home directory
-        # 
+        #
         # Need this beccause flutter will priporitize using the same java version as Android Studio if it exists.
-        # Only way to not look at Android Studio is to explicity set jdk-dir. 
+        # Only way to not look at Android Studio is to explicity set jdk-dir.
         # mkdir -p $HOME/.config/flutter
         ln -sf ${flutterSettingsFile} $HOME/.config/flutter/settings
       '';

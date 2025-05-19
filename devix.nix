@@ -5,7 +5,7 @@
   ...
 }:
 let
-  cfg = config.devmods.common;
+  cfg = config.devModules.common;
 in
 {
   imports = [
@@ -26,7 +26,7 @@ in
     ./profiles/android-dev-env.nix
   ];
 
-  options.devmods.common.allowUnfree = lib.mkOption {
+  options.devModules.common.allowUnfree = lib.mkOption {
     type = lib.types.listOf lib.types.bool;
     default = [ ];
     description = "Modules that want to enable nixpkgs.config.allowUnfree.";

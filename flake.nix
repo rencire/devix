@@ -13,7 +13,7 @@
         "x86_64-linux"
       ];
       imports = [ flakelight.flakelightModules.flakelightModule ];
-      flakelightModule = ./devmods.nix;
+      flakelightModule = ./devix.nix;
       devShell = {
         packages = pkgs: [ pkgs.ruff ];
       };

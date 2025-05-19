@@ -5,7 +5,7 @@
 }:
 
 let
-  cfg = config.devmods.modules.flutter;
+  cfg = config.devModules.flutter;
 in
 {
   imports = [
@@ -13,12 +13,12 @@ in
     ./packages.nix
     ./devShell.nix
   ];
-  options.devmods.modules.flutter = {
+  options.devModules.flutter = {
     enable = lib.mkEnableOption "Module for setting up flutter";
   };
 
   config = lib.mkIf cfg.enable {
-    devmods = {
+    devModules = {
       # Allow unfree modules
       common.allowUnfree = [ true ];
     };

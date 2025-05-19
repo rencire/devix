@@ -1,10 +1,10 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.modules.android;
+  cfg = config.devModules.android;
 in
 {
   config = lib.mkIf cfg.enable {
-    # TODO put this under `devmods.android` namespace?
+    # TODO put this under `devModules.android` namespace?
     packages = {
       sync-android-build-files =
         pkgs:

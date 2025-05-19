@@ -4,7 +4,7 @@
   ...
 }:
 let
-  cfg = config.devmods.modules.android;
+  cfg = config.devModules.android;
 in
 {
   imports = [
@@ -14,7 +14,7 @@ in
   ];
 
   config = lib.mkIf cfg.enable {
-    devmods.common.allowUnfree = [ true ];
+    devModules.common.allowUnfree = [ true ];
     nixpkgs.config = {
       android_sdk.accept_license = true;
     };

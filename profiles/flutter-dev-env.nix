@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  cfg = config.devmods.profiles.flutter-dev-env;
+  cfg = config.devProfiles.flutter-dev-env;
 in
 {
   # TODO

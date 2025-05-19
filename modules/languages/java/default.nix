@@ -5,7 +5,7 @@
 }:
 
 let
-  cfg = config.devmods.modules.languages.java;
+  cfg = config.devModules.languages.java;
 in
 {
   imports = [
