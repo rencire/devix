@@ -9,7 +9,6 @@ in
 {
   imports = [
     ./options.nix
-    ./packages.nix
     ./devShell.nix
   ];
 

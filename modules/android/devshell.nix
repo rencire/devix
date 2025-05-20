@@ -66,9 +66,6 @@ in
 
         shellHook =
           # TODO move this shellHook to profiles.android
-          let
-            androidDir = if config.devModules.flutter.enable then "./android/" else ".";
-          in
           ''
             set -e
 
@@ -92,11 +89,8 @@ in
             test -e "$ANDROID_USER_HOME" || mkdir -p "$ANDROID_USER_HOME"
             test -e "$ANDROID_AVD_HOME" || mkdir -p "$ANDROID_AVD_HOME"
 
-            # Sync build files
-            ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${androidDir}" "${cfg.platform.compileSdkVersion}" "${cfg.androidGradlePlugin.version}" "${pkgs.devModules.gradle-wrapper}"
             set +e
           '';
-
       };
   };
 }

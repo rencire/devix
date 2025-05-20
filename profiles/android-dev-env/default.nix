@@ -8,6 +8,7 @@
 }:
 let
   cfg = config.devProfiles.android-dev-env;
+  androidModuleCfg = config.devModules.android;
   # Static value we set for override configuration so that
   # values can be overwritten.  Lower is higher priority, hence why
   # override values can "override" the preset values defined below.
@@ -41,14 +42,17 @@ let
         version = "8.8";
       };
       android = {
-        platform.compileSdkVersion = "from preset 3";
+        platform.compileSdkVersion = "34";
         platform.versions = [ "34" ];
         androidGradlePlugin.version = "8.6.0";
         buildTools.versions = [ "34.0.0" ];
         cmake.versions = [ "3.22.1" ];
-        ndk.versions = [
-          "26.3.11579264"
-        ];
+        ndk = {
+          enable = true;
+          versions = [
+            "26.3.11579264"
+          ];
+        };
       };
     };
   };
@@ -63,6 +67,9 @@ let
   overrideModulesCfgWithPriorities = devix.utils.mkPreset consumerCfgPriority overrideModulesCfgWithoutNulls;
 in
 {
+  imports = [
+    ./packages.nix
+  ];
   options.devProfiles.android-dev-env = {
     enable = lib.mkEnableOption "Enable the Android development environment";
     presets = lib.mkOption {
@@ -70,6 +77,13 @@ in
       default = [ ];
       description = ''
         List of presets for determining values of options for the android profile.
+      '';
+    };
+    projectDir = lib.mkOption {
+      type = lib.types.str;
+      default = "."; # denotes current directory
+      description = ''
+        Directory of android project.
       '';
     };
 
@@ -95,5 +109,11 @@ in
         overrideModulesCfgWithPriorities
       ]
     );
+    devShell = pkgs: {
+      shellHook = ''
+        # Sync versions specified in our nix files with the settings specified in the android files
+        ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${cfg.projectDir}" "${androidModuleCfg.platform.compileSdkVersion}" "${androidModuleCfg.androidGradlePlugin.version}" "${pkgs.devModules.gradle-wrapper}"
+      '';
+    };
   };
 }

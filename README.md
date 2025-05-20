@@ -139,6 +139,3 @@ module.
 
 
 
-# TODO
-- [] Remove high "devmods" namespace? Maybe use only "devmods" and "devprofiles" as top-level attributes:
-  - Maybe rename project to "devo", or "flaked", or "devflake"?

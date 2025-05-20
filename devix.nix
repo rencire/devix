@@ -23,7 +23,8 @@ in
     ./modules/gradle/default.nix
     ./modules/android/default.nix
     ./modules/flutter/default.nix
-    ./profiles/android-dev-env.nix
+    ./profiles/android-dev-env/default.nix
+    ./profiles/flutter-dev-env/default.nix
   ];
 
   options.devModules.common.allowUnfree = lib.mkOption {
