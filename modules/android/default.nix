@@ -9,11 +9,13 @@ in
 {
   imports = [
     ./options.nix
+    ./packages.nix
     ./devShell.nix
   ];
 
   config = lib.mkIf cfg.enable {
     devModules.common.allowUnfree = [ true ];
+
     nixpkgs.config = {
       android_sdk.accept_license = true;
     };

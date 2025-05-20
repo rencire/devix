@@ -1,43 +1,21 @@
 { config, lib, ... }:
 let
   cfg = config.devModules.android;
-
-  sdkArgs = {
-    # TODO add getScalar or getList from above w/ default value
-    cmdLineToolsVersion = cfg.cmdLineTools.version;
-    platformVersions = cfg.platform.versions;
-    platformToolsVersion = cfg.platformTools.version;
-    buildToolsVersions = cfg.buildTools.versions;
-    includeEmulator = cfg.emulator.enable;
-    emulatorVersion = cfg.emulator.version;
-    includeSystemImages = cfg.systemImages.enable;
-    systemImageTypes = cfg.systemImageTypes;
-    abiVersions = cfg.abis;
-    cmakeVersions = cfg.cmake.versions;
-    includeNDK = cfg.ndk.enable;
-    ndkVersions = cfg.ndk.versions;
-    useGoogleAPIs = cfg.googleAPIs.enable;
-    includeSources = cfg.sources.enable;
-    includeExtras = cfg.extras;
-    extraLicenses = cfg.extraLicenses;
-  };
 in
 {
   config = lib.mkIf cfg.enable {
-    # apply java and gradle versions
+    # Add devShell confiugration for android
     devShell =
       pkgs:
       let
-        androidComposition = pkgs.androidenv.composeAndroidPackages sdkArgs;
-        androidSdk = androidComposition.androidsdk;
-        ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
+        ANDROID_HOME = "${pkgs.dv-androidSdk}/libexec/android-sdk";
         # NOTE: not sure why `avdmanager` is warningabout `ndk` and `nkd-bundle` both existing.
         ANDROID_NDK_ROOT = "${ANDROID_HOME}/ndk/";
         os = builtins.elemAt (builtins.split "-" pkgs.stdenv.system) 2;
       in
       {
         packages = [
-          androidSdk # reference our own sdk settings
+          pkgs.dv-androidSdk # reference our own sdk settings
         ];
 
         # Environment variables
@@ -46,11 +24,6 @@ in
           ANDROID_SDK_ROOT = ANDROID_HOME;
           ANDROID_NDK_ROOT = ANDROID_NDK_ROOT;
 
-          # TODO need change "head" to use something like maxVersion to pick the appropriate version from a list:
-          # maxVersion = builtins.foldl' (acc: v:
-          # if lib.compareVersions v acc == 1 then v else acc
-          # ) (builtins.head versions) (builtins.tail versions);
-          GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/${lib.head cfg.buildTools.versions}/aapt2";
           # emulator related: vulkan-loader and libGL shared libs are necessary for hardware decoding
           LD_LIBRARY_PATH = "${
             lib.makeLibraryPath [

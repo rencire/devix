@@ -110,6 +110,13 @@ in
       ]
     );
     devShell = pkgs: {
+      env = {
+        # Patch gradle and android integration (needed for api level 34)
+        # TODO need something more robust then picking the head of list to get appropriate version, if
+        # list intended to have multiple versions.
+        # Works for now, since mainly using preset "api level 34", which only needs buildtools version 34.0.0.
+        GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${pkgs.dv-androidSdk}/libexec/android-sdk/build-tools/${lib.head androidModuleCfg.buildTools.versions}/aapt2";
+      };
       shellHook = ''
         # Sync versions specified in our nix files with the settings specified in the android files
         ${pkgs.sync-android-build-files}/bin/sync-android-build-files "${cfg.projectDir}" "${androidModuleCfg.platform.compileSdkVersion}" "${androidModuleCfg.androidGradlePlugin.version}" "${pkgs.devModules.gradle-wrapper}"
