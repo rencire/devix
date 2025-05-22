@@ -24,31 +24,32 @@ in
           }
         '';
       };
-      # Patch flutter 3.29, the current version in nixpkgs.
-      # See: https://github.com/NixOS/nixpkgs/issues/395096#issuecomment-2850983875
-      patchedFlutter = pkgs.flutter.override (prev: rec {
-        flutter = prev.flutter.overrideAttrs (prevAttrs: {
-          patches = prevAttrs.patches ++ [
-            # This patch is needed to avoid the Kotlin Gradle plugin writing to the store.
-            (pkgs.writeText "kotlin-fix.patch" ''
-              --- a/packages/flutter_tools/gradle/build.gradle.kts
-              +++ b/packages/flutter_tools/gradle/build.gradle.kts
-              @@ -4,6 +4,8 @@
+      # # Patch flutter 3.29, the current version in nixpkgs.
+      # # See: https://github.com/NixOS/nixpkgs/issues/395096#issuecomment-2850983875
+      # patchedFlutter = pkgs.flutter.override (prev: rec {
+      #   flutter = prev.flutter.overrideAttrs (prevAttrs: {
+      #     patches = prevAttrs.patches ++ [
+      #       # This patch is needed to avoid the Kotlin Gradle plugin writing to the store.
+      #       (pkgs.writeText "kotlin-fix.patch" ''
+      #         --- a/packages/flutter_tools/gradle/build.gradle.kts
+      #         +++ b/packages/flutter_tools/gradle/build.gradle.kts
+      #         @@ -4,6 +4,8 @@
 
-               import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+      #          import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-              +gradle.startParameter.projectCacheDir = layout.buildDirectory.dir("cache").get().asFile
-              +
-               plugins {
-                   `java-gradle-plugin`
-                   groovy
-            '')
-          ];
-          passthru = prevAttrs.passthru // {
-            sdk = flutter;
-          };
-        });
-      });
+      #         +gradle.startParameter.projectCacheDir = layout.buildDirectory.dir("cache").get().asFile
+      #         +
+      #          plugins {
+      #              `java-gradle-plugin`
+      #              groovy
+      #       '')
+      #     ];
+      #     passthru = prevAttrs.passthru // {
+      #       sdk = flutter;
+      #     };
+      #   });
+      # });
+      patchedFlutter = pkgs.flutter;
 
     in
 

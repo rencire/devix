@@ -25,6 +25,9 @@ in
   # Add the android sdk package to packages, so an be used in various places.
   config = lib.mkIf cfg.enable {
     packages = {
+      # TODO instead of defining this here in packages, we should make this available
+      # to the consuming profile via either an `option`, or we don't follow the nix module
+      # format and simplify our modules with our own module attrset schema.
       dv-androidSdk =
         pkgs:
         let

@@ -11,7 +11,7 @@ This is done through configuring "devProfiles" and "devModules" in a nix flake f
 1.Create a new project nix template...
 
 ```
-nix flake new -t github:rencire/devix/main <your_project>
+nix flake new -t github:rencire/devix/main#minimal <your_project>
 
 ```
 
@@ -19,8 +19,10 @@ or initialize exsting project with template in your project directory:
 
 ```
 cd <your_project>
-nix flake init github:rencire/devix/main
+nix flake init github:rencire/devix/main#minimal
 ```
+
+Note: Replace "minimal" with the template you want.  See `templates` folder for details.
 
 2. Go to <your_project> and allow direnv to autoload your shell
 

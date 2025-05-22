@@ -17,6 +17,17 @@
       devShell = {
         packages = pkgs: [ pkgs.ruff ];
       };
+      templates = rec {
+        minimal = {
+          path = ./templates/minimal;
+          description = "Flake for creating a minimal devix setup";
+        };
+        flutter = {
+          path = ./templates/flutter;
+          description = "Flake for creating a minimal flutter development setup";
+        };
+        default = minimal;
+      };
       formatters = {
         "*.py" = "ruff format";
       };

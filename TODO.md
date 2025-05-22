@@ -5,6 +5,7 @@
   - Make sure to refactor modules/flutter so that module dependencies are in the profile level
     not at module.
 - [] Add versioning to flutter module
+- [] Add a flutter template
 
 
 ## Android preset

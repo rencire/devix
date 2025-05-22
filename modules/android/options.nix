@@ -19,6 +19,15 @@
       '';
     };
 
+    cmdLineTools.version = lib.mkOption {
+      type = lib.types.either (lib.types.enum [ "latest" ]) lib.types.str;
+      default = "latest";
+      description = ''
+        The version of the Android command line tools to install.
+        By default, latest version from nixpkgs is installed.
+      '';
+    };
+
     platform.compileSdkVersion = lib.mkOption {
       type = devix.types.version;
       default = "";
@@ -28,15 +37,6 @@
         If multiple values are specified, we will take the highest version.
         By default, this is empty string, which means we will not update the
         version in `app/build.gradle.kts`.
-      '';
-    };
-
-    cmdLineTools.version = lib.mkOption {
-      type = lib.types.either (lib.types.enum [ "latest" ]) lib.types.str;
-      default = "latest";
-      description = ''
-        The version of the Android command line tools to install.
-        By default, latest version from nixpkgs is installed.
       '';
     };
 
