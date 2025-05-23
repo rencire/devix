@@ -68,7 +68,7 @@ in
         #
         # Need this beccause flutter will priporitize using the same java version as Android Studio if it exists.
         # Only way to not look at Android Studio is to explicity set jdk-dir.
-        # mkdir -p $HOME/.config/flutter
+        mkdir -p $HOME/.config/flutter
         ln -sf ${flutterSettingsFile} $HOME/.config/flutter/settings
       '';
     }
