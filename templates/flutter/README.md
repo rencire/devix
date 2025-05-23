@@ -18,7 +18,9 @@ cd <your_project>
 nix flake init -t github:rencire/devix/main#flutter
 ```
 
-2. Edit the flake.nix with your config:
+2. Go into the project directory
+
+3. Edit the flake.nix with your config:
 
 ```nix
 {
@@ -30,7 +32,7 @@ nix flake init -t github:rencire/devix/main#flutter
     devix ./. {
       inherit inputs;
       systems = [
-        # Add your machine configuration here
+        # Add your machine configuration here if not specified below already
         "aarch64-darwin"
         "x86_64-linux"
       ];
@@ -64,12 +66,19 @@ nix flake init -t github:rencire/devix/main#flutter
 ```
 
 
-3. Allow direnv so dependencies auto-reload:
+4. Allow direnv so dependencies auto-reload:
 ```
 direnv allow  
 ```
 
-4. Run `flutter build apk`. The app should successfully build!
+5. Go into the developer shell with:
+```
+nix develop
+```
+
+6. Run `flutter build apk`. The app should successfully build!
+
+
 
 
 
