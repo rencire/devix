@@ -28,10 +28,5 @@
           };
         };
       };
-      # Add rest of nix flake configuration below (specifically flakelight)
-      devShell = pkgs: {
-        env = { };
-        shellHook = "";
-      };
     };
 }
