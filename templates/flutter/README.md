@@ -1,7 +1,6 @@
 # Note
-- This only has been tested with android target for flutter.
-- This will automatically sync gradle, java, and androidGradlePlugins specified in nix connfiguration by *overwriting* the relevant android files in a typical flutter project (default android directory at `./android`).
-  These versions are also set in the android-dev-env profiles's "presets". (see below usage of "android-api-34")
+- This only has been tested with android target for flutter.  Currently it only supports android api level 34, gradle 8.8, and android gradle plugin 8.6.0. (see  [`preset settings`](https://github.com/rencire/devix/blob/33d024fb8ac97595ea88dd155b968cb19dcc2918/profiles/android-dev-env/default.nix#L37))
+- This will automatically sync gradle, java, and androidGradlePlugins versions specified in nix connfiguration by **overwriting** the relevant android files in a typical flutter project (default android directory at `./android`).
 
 
 # Quickstart
@@ -78,8 +77,7 @@ direnv allow
 nix develop
 ```
 
-6. Run `flutter build apk`. The app should successfully build!
-
+6. Run `flutter build apk`. The app should successfully build.
 
 
 
