@@ -19,7 +19,7 @@ or initialize exsting project with template in your project directory:
 
 ```
 cd <your_project>
-nix flake init github:rencire/devix/main#minimal
+nix flake init -t github:rencire/devix/main#minimal
 ```
 
 Note: Replace "minimal" with the template you want.  See `templates` folder for details.
