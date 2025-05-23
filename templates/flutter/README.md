@@ -1,5 +1,7 @@
 # Note
 - This only has been tested with android target for flutter.
+- This will automatically sync gradle, java, and androidGradlePlugins specified in nix connfiguration by *overwriting* the relevant android files in a typical flutter project (default android directory at `./android`).
+  These versions are also set in the android-dev-env profiles's "presets". (see below usage of "android-api-34")
 
 
 # Quickstart
