@@ -1,6 +1,11 @@
 {
   description = "Flakelight module for setting up developer modules";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  # Use own forked nixpkgs w/ PR fix, until the PR is merged to nixpkgs master branch.
+  #
+  # Using fork because we want the changes on top of latest master.  Otherwise, we would simply
+  # point to the PR commit on the original nixpkgs repo.
+  inputs.nixpkgs.url = "github:rencire/nixpkgs/pr-412907-rebased";
+
   inputs.flakelight.url = "github:nix-community/flakelight";
 
   outputs =
@@ -10,6 +15,7 @@
       systems = [
         "aarch64-darwin"
         "aarch64-linux"
+        "x86_64-darwin"
         "x86_64-linux"
       ];
       imports = [ flakelight.flakelightModules.flakelightModule ];

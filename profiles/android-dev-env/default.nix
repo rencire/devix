@@ -55,6 +55,18 @@ let
         };
       };
     };
+    "latest" = devix.utils.mkPreset 99 {
+      languages.java = {
+        version = "24";
+      };
+      gradle = {
+        verison = "8.14";
+      };
+      android = {
+        platform.versions = [ "35" ];
+        # androidGradlePlugin.version = "8.6.0";
+      };
+    };
   };
   # Get list of selected presets specified by consumer of this profile
   selectedPresetsList = map (key: presets.${key}) cfg.presets;
