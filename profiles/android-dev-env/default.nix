@@ -63,7 +63,7 @@ let
         version = "8.14.1";
       };
       android = {
-        platform.versions = [ "35" ];
+        platform.versions = [ "36" ];
         # androidGradlePlugin.version = "8.6.0";
       };
     };
