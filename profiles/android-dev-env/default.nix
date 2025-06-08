@@ -60,7 +60,7 @@ let
         version = "24";
       };
       gradle = {
-        verison = "8.14";
+        version = "8.14";
       };
       android = {
         platform.versions = [ "35" ];
